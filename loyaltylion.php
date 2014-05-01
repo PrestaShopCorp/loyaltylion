@@ -30,7 +30,8 @@ class LoyaltyLion extends Module {
       $this->registerHook('actionValidateOrder') &&
       $this->registerHook('orderReturn') &&
       $this->registerHook('actionProductCancel') &&
-      $this->registerHook('actionOrderSlipAdd') &&
+      // $this->registerHook('actionOrderSlipAdd') &&
+      $this->registerHook('actionObjectOrderSlipAddAfter') &&
       $this->registerHook('actionCustomerAccountAdd');
   }
 
@@ -166,6 +167,8 @@ class LoyaltyLion extends Module {
   //   }
   // }
 
+  // this is fired when an order is first created and validated, and we can use it to create the
+  // order in LoyaltyLion
   public function hookActionValidateOrder($params) {
 
     $order = $params['order'];
@@ -204,26 +207,25 @@ class LoyaltyLion extends Module {
     }
   }
 
+  // this is fired when an order's status changes, e.g. becoming paid
   public function hookActionOrderStatusPostUpdate($params) {
     $order = new Order((int) $params['id_order']);
     $this->sendOrderUpdate($order);
   }
 
+  // at the moment this hook is not really used, as we only consider refunds via order/credit slips,
+  // which are not even created when this hook fires (we get them with the "actionObjectOrderSlipAddAfter" 
+  // hook, below) - but we'll register this hook anyway for future proofing, as we might want to support
+  // refunds without a credit slip
   public function hookActionProductCancel($params) {
     $this->sendOrderUpdate($params['order']);
   }
 
-  public function hookActionOrderSlipAdd($params) {
-    $this->sendOrderUpdate($params['order']);
-  }
-
-  public function hookOrderReturn($params) {
-    xdebug_break();
-
-    $order = new Order((int) $params['id_order']);
-    $details = OrderReturn::getOrdersReturnDetail((int) $params['orderReturn']->id);
-
-
+  // this is a more reliable way to discover when credit slips are created, as the standard orderslip
+  // hook does not fire on partial refunds (surprising? no)
+  public function hookActionObjectOrderSlipAddAfter($params) {
+    $order = new Order( (int) $params['object']->id_order );
+    $this->sendOrderUpdate($order);
   }
 
   public function hookActionCustomerAccountAdd($params) {
@@ -254,20 +256,14 @@ class LoyaltyLion extends Module {
   private function sendOrderUpdate($order) {
 
     if (!$order) return;
-
-    xdebug_break();
     
     $data = array(
       // an order "reference" is not unique normally, but this method will make sure it is (it adds a #2 etc)
       // to the reference if there are multiple orders with the same one
       'number' => (string) $order->getUniqReference(),
-      // 'total' => (string) $order->total_paid,
-      // 'total_shipping' => (string) $order->total_shipping,
       'refund_status' => 'not_refunded',
       'cancellation_status' => 'not_cancelled',
       'total_refunded' => 0,
-      // 'customer_id' => $customer->id,
-      // 'customer_email' => $customer->email,
     );
 
     if (floatval($order->total_paid_real) == 0) {
@@ -284,7 +280,7 @@ class LoyaltyLion extends Module {
     }
 
     // cancelled?
-    if ($order->getCurrentOrderState() == Configuration::get('PS_OS_CANCELED')) {
+    if ($order->getCurrentState() == Configuration::get('PS_OS_CANCELED')) {
       $data['cancellation_status'] = 'cancelled';
     }
 
@@ -323,9 +319,7 @@ class LoyaltyLion extends Module {
       }
     }
 
-    // if ($order->getCurrentOrderState() == Configuration::get('PS_OS_REFUND')) {
-
-    // }
+    // refund state: PS_OS_REFUND
 
     $this->loadLoyaltyLionClient();
     $response = $this->client->orders->update($order->id, $data);
