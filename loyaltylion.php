@@ -294,111 +294,22 @@ class LoyaltyLion extends Module {
 
     // refunds in prestashop are a bit of a clusterfuck, so this isn't too simple and might still have bugs
 
-    $refund_total = 0;
-
-    // we'll start by looking for product refunds. before an order is shipped, you can apply a refund against
-    // individual products in the order. these product lines then have their 'product_quantity_refunded' updated
-    // (which therefore allows refunding only 1 of a product if multiple were ordered)
-
+    $total_refunded = 0;
 
     // i think we can simplify this by querying for credit (order) slips attached to this order
-    $credit_slips = OrderSlip::getOrdersSlip($order->customer_id, $order->id);
+    $credit_slips = OrderSlip::getOrdersSlip($order->id_customer, $order->id);
 
     // if we have at least one credit slip that should mean we have had a refund, so let's add them
     // NOTE: the "amount" is the unit price of the product * quantity refunded, plus shipping if they opted
     //       refund the shipping cost. However PS doesn't stop you from refunding shipping cost more than 
-    //       once if you do multiple refunds so the refund total could end up more than the actual total
-    //       ... if this happens we will just reset it to the order total so it doesn't confuse loyaltylion
+    //       once if you do multiple refunds, so the refund total could end up more than the actual total
+    //       ... if this happens we will just cap it to the order total so it doesn't confuse loyaltylion
       
     foreach($credit_slips as $slip) {
       if (!$slip['amount']) continue;
 
-      $refund_total += $slip['amount'];
+      $total_refunded += $slip['amount'];
     }
-
-
-    $products = $order->getProducts();
-
-    foreach ($order->getProducts() as $product) {
-
-      xdebug_break();
-
-      // this is a summary of all the credit slips for this product
-      $resume = OrderSlip::getProductSlipResume($product['id_order_detail']);
-
-      // this is the amount of the credit slip, i.e. the amount refunded, which
-      $refund_total += floatval($resume['amount_tax_incl']);
-
-      // we consider credit (order) slips as a 
-
-      // $order_slips = Db::getInstance()->executeS('
-      //   SELECT product_quantity, amount_tax_excl, amount_tax_incl, shipping_cost_amount, date_add
-      //   FROM `'._DB_PREFIX_.'order_slip_detail` osd
-      //   LEFT JOIN `'._DB_PREFIX_.'order_slip` os
-      //   ON os.id_order_slip = osd.id_order_slip
-      //   WHERE osd.`id_order_detail` = '.(int) $product['id_order_detail']);
-
-      // foreach ($order_slips as $order_slip) {
-      //   if ($order_slip['shipping_cost'] && !$shipping_refund_total) {
-      //     // only add shipping refund total once... it seems that it might be possible to tick the box to
-      //     // refund shipping more than once (if you did multiple refunds) but we are just going to use it once,
-      //     // or we could end up with a refund total that is greater than what was paid... I wonder if PS would
-      //     // actually let that happen... probably.
-          
-      //     $shipping_refund_total = floatval($order_slip['shipping_cost_amount']);
-      //     break;
-      //   }
-      // }
-
-      // // if an order has been paid but not yet shipped, you can "refund" it. if an order has been shipped then you 
-      // // can "return" it. This is very confusing as it seemingly does not let you "refund" an order which has been 
-      // // shipped, aside from internally recognising that "returned" is the same as being refunded?
-      // //
-      // // I don't know enough about prestashop usage to know what to do here, so for now we will make it an option -
-      // // by default we will treat "returns" as if they are refunds, but you can turn this off and then we will only
-      // // treat a return as a refund if it generated a credit slip (which we always consider refunds, because, well
-      // // that is what they are right?)
-
-      // // if (intval($product['product_quantity_refunded']) > 0) {
-
-      // // when doing a refund you have the option to generate a credit (order) slip and/or a voucher, but these are
-      // // NOT required to actually complete the refund, so we can't rely on the order slip to calculate the refund
-      // // amount. however, the product line should have a quantity refunded which we can use instead
-      
-      // // that said, we also need to check if a credit slip was created because if it was, they had the option 
-      // // to refund the shipping cost as well which will adjust the refund total
-
-      // // FYI prestashop seems to fuck up itself if you don't create a credit slip as it seems to always expect one
-      // // to be there, meh...
-
-      // xdebug_break();
-
-      // $order_slips = Db::getInstance()->executeS('
-      //   SELECT product_quantity, amount_tax_excl, amount_tax_incl, shipping_cost_amount, date_add
-      //   FROM `'._DB_PREFIX_.'order_slip_detail` osd
-      //   LEFT JOIN `'._DB_PREFIX_.'order_slip` os
-      //   ON os.id_order_slip = osd.id_order_slip
-      //   WHERE osd.`id_order_detail` = '.(int) $product['id_order_detail']);
-
-      // foreach ($order_slips as $order_slip) {
-      //   if ($order_slip['shipping_cost'] && !$shipping_refund_total) {
-      //     // only add shipping refund total once... it seems that it might be possible to tick the box to
-      //     // refund shipping more than once (if you did multiple refunds) but we are just going to use it once,
-      //     // or we could end up with a refund total that is greater than what was paid... I wonder if PS would
-      //     // actually let that happen... probably.
-          
-      //     $shipping_refund_total = floatval($order_slip['shipping_cost_amount']);
-      //     break;
-      //   }
-      // }
-
-      // // now to calculate the actual refund total we'll use the unit price of this product line * the quantity refunded,
-      // // which I hope will be correct
-      // $refund_total += ( floatval($product['unit_price_tax_incl']) * intval($product['product_quantity_refunded']) );
-      // // }
-    }
-
-    $total_refunded = $refund_total + $shipping_refund_total;
     
     if ($total_refunded > 0) {
       if ($total_refunded < floatval($order->total_paid)) {
