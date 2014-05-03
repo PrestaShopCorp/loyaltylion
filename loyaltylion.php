@@ -28,13 +28,12 @@ class LoyaltyLion extends Module {
       $this->registerHook('displayOrderConfirmation') &&
       $this->registerHook('actionOrderStatusPostUpdate') &&
       $this->registerHook('actionValidateOrder') &&
-      $this->registerHook('orderReturn') &&
       $this->registerHook('actionProductCancel') &&
       // $this->registerHook('actionOrderSlipAdd') &&
       $this->registerHook('actionObjectOrderSlipAddAfter') &&
       $this->registerHook('actionObjectProductCommentAddAfter') &&
-      $this->registerHook('actionObjectProductCommentUpdateAfter') &&
       $this->registerHook('actionLoyaltyLionProductCommentAccepted') &&
+      $this->registerHook('actionLoyaltyLionProductCommentDeleted') &&
       $this->registerHook('actionCustomerAccountAdd');
   }
 
@@ -150,24 +149,65 @@ class LoyaltyLion extends Module {
   }
 
   public function hookActionObjectProductCommentAddAfter($params) {
-    xdebug_break();
+    // xdebug_break();
     $comment = $params['object'];
-  }
+    $customer = new Customer($comment->id_customer);
 
-  public function hookActionObjectProductCommentUpdateAfter($params) {
-    xdebug_break();
-    $comment = $params['object'];
+    $data = array(
+      'customer_id' => $customer->id,
+      'customer_email' => $customer->email,
+      'date' => date('c'),
+      'merchant_id' => $comment->id,
+    );
+
+    $this->loadLoyaltyLionClient();
+
+    $response = $this->client->activities->track('review', $data);
+
+    if (!$response->success) {
+      Logger::addLog('[LoyaltyLion] Failed to track review activity. API status: '
+        . $response->status . ', error: ' . $response->error, 3);
+    }
+
+    if (Configuration::get('PRODUCT_COMMENTS_MODERATE') !== '1') {
+      // reviews do not require moderation, which means this one will be shown immediately and we should
+      // send an update now to approve it
+      
+      $response = $this->client->activities->update('review', $comment->id, array('state' => 'approved'));
+
+      if (!$response->success) {
+        Logger::addLog('[LoyaltyLion] Failed to update review activity. API status: '
+          . $response->status . ', error: ' . $response->error, 3);
+      }
+    }
   }
 
   public function hookActionLoyaltyLionProductCommentAccepted($params) {
-    xdebug_break();
+    // xdebug_break();
 
-    @include_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . 
-      DIRECTORY_SEPARATOR . 'productcomments' . DIRECTORY_SEPARATOR . '/ProductComment.php');
+    if (!$params['id']) return;
 
-    if (!class_exists('ProductComment') || !$params['id']) return;
+    $this->loadLoyaltyLionClient();
+    $response = $this->client->activities->update('review', $params['id'], array('state' => 'approved'));
 
-    $comment = new ProductComment((int) $params['id']);
+    if (!$response->success) {
+      Logger::addLog('[LoyaltyLion] Failed to update review activity. API status: '
+        . $response->status . ', error: ' . $response->error, 3);
+    }
+  }
+
+  public function hookActionLoyaltyLionProductCommentDeleted($params) {
+    // xdebug_break();
+
+    if (!$params['id']) return;
+
+    $this->loadLoyaltyLionClient();
+    $response = $this->client->activities->update('review', $params['id'], array('state' => 'declined'));
+
+    if (!$response->success) {
+      Logger::addLog('[LoyaltyLion] Failed to update review activity. API status: '
+        . $response->status . ', error: ' . $response->error, 3);
+    }
   }
 
   // this is fired when an order is first created and validated, and we can use it to create the
@@ -176,8 +216,6 @@ class LoyaltyLion extends Module {
 
     $order = $params['order'];
     $customer = new Customer((int) $order->id_customer);
-
-    xdebug_break();
 
     $data = array(
       // an order "reference" is not unique normally, but this method will make sure it is (it adds a #2 etc)
@@ -242,10 +280,10 @@ class LoyaltyLion extends Module {
 
     $this->loadLoyaltyLionClient();
 
-    $response = $this->client->events->track('signup', $data);
+    $response = $this->client->activities->track('signup', $data);
 
     if (!$response->success) {
-      Logger::addLog('[LoyaltyLion] Failed to track signup event. API status: '
+      Logger::addLog('[LoyaltyLion] Failed to track signup activity. API status: '
         . $response->status . ', error: ' . $response->error, 3);
     }
   }
