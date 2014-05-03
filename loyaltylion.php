@@ -32,6 +32,9 @@ class LoyaltyLion extends Module {
       $this->registerHook('actionProductCancel') &&
       // $this->registerHook('actionOrderSlipAdd') &&
       $this->registerHook('actionObjectOrderSlipAddAfter') &&
+      $this->registerHook('actionObjectProductCommentAddAfter') &&
+      $this->registerHook('actionObjectProductCommentUpdateAfter') &&
+      $this->registerHook('actionLoyaltyLionProductCommentAccepted') &&
       $this->registerHook('actionCustomerAccountAdd');
   }
 
@@ -146,26 +149,26 @@ class LoyaltyLion extends Module {
     return $html;
   }
 
-  /**
-   * Notify LoyaltyLion of a new order
-   * 
-   * @param  [type] $params [description]
-   * @return [type]         [description]
-   */
-  // public function hookDisplayOrderConfirmation($params) {
-  //   $this->loadLoyaltyLionClient();
+  public function hookActionObjectProductCommentAddAfter($params) {
+    xdebug_break();
+    $comment = $params['object'];
+  }
 
-  //   // load the actual order, as the params only contain the new order status (not the rest of the order info)
-  //   $order = $params['objOrder'];
-  //   $order_data = $this->getOrderData($order);
+  public function hookActionObjectProductCommentUpdateAfter($params) {
+    xdebug_break();
+    $comment = $params['object'];
+  }
 
-  //   $response = $this->client->orders->create($order_data);
+  public function hookActionLoyaltyLionProductCommentAccepted($params) {
+    xdebug_break();
 
-  //   if (!$response->success) {
-  //     Logger::addLog('[LoyaltyLion] Failed to track new order. API status: '
-  //       . $response->status . ', error: ' . $response->error, 3);
-  //   }
-  // }
+    @include_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . 
+      DIRECTORY_SEPARATOR . 'productcomments' . DIRECTORY_SEPARATOR . '/ProductComment.php');
+
+    if (!class_exists('ProductComment') || !$params['id']) return;
+
+    $comment = new ProductComment((int) $params['id']);
+  }
 
   // this is fired when an order is first created and validated, and we can use it to create the
   // order in LoyaltyLion
@@ -328,6 +331,10 @@ class LoyaltyLion extends Module {
       Logger::addLog('[LoyaltyLion] Failed to update order (' . $order->id . '). API status: '
         . $response->status . ', error: ' . $response->error, 3);
     }
+  }
+
+  private function sendProductComment($comment) {
+
   }
 
   /**
