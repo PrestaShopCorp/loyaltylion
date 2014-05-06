@@ -122,6 +122,15 @@ class LoyaltyLion extends Module {
 
   public function hookDisplayHeader() {
 
+    // prestashop appears to run this hook prior to starting output, so it should be safe to
+    // set the referral cookie here if we have one !
+    $referral_id = Tools::getValue('ll_ref_id');
+
+    // if we have an id and we haven't already set a cookie for it (don't override existing ref cookie)
+    if ($referral_id && !$this->context->cookie->loyaltylion_referral_id) {
+      $this->context->cookie->__set('loyaltylion_referral_id', $referral_id);
+    }
+
     $customer = $this->context->customer;
 
     $this->context->smarty->assign(array(
@@ -148,8 +157,43 @@ class LoyaltyLion extends Module {
     return $html;
   }
 
+  /**
+   * Fired when a customer account is created
+   * 
+   * @param  [type] $params [description]
+   * @return [type]         [description]
+   */
+  public function hookActionCustomerAccountAdd($params) {
+    $customer = $params['newCustomer'];
+
+    $data = array(
+      'customer_id' => $customer->id,
+      'customer_email' => $customer->email,
+      'date' => date('c'),
+    );
+
+    if ($this->context->cookie->loyaltylion_referral_id)
+      $data['referral_id'] = $this->context->cookie->loyaltylion_referral_id;
+
+    $this->loadLoyaltyLionClient();
+
+    $response = $this->client->activities->track('signup', $data);
+
+    if (!$response->success) {
+      Logger::addLog('[LoyaltyLion] Failed to track signup activity. API status: '
+        . $response->status . ', error: ' . $response->error, 3);
+    }
+  }
+
+  /**
+   * Hook into `ProductComment` creates, which allows us to track when a new product comment
+   * has been created. This only supports the official Prestashop product comments module
+   * 
+   * @param  [type] $params [description]
+   * @return [type]         [description]
+   */
   public function hookActionObjectProductCommentAddAfter($params) {
-    // xdebug_break();
+    
     $comment = $params['object'];
     $customer = new Customer($comment->id_customer);
 
@@ -182,8 +226,14 @@ class LoyaltyLion extends Module {
     }
   }
 
+  /**
+   * This is fired by our AdminModulesContrller override when a comment has been accepted
+   * in the moderation view
+   * 
+   * @param  [type] $params [description]
+   * @return [type]         [description]
+   */
   public function hookActionLoyaltyLionProductCommentAccepted($params) {
-    // xdebug_break();
 
     if (!$params['id']) return;
 
@@ -196,8 +246,14 @@ class LoyaltyLion extends Module {
     }
   }
 
+  /**
+   * Fired by our AdminModulesController override when a comment has been rejected (i.e. not accepted)
+   * or deleted (accepted and then deleted)
+   * 
+   * @param  [type] $params [description]
+   * @return [type]         [description]
+   */
   public function hookActionLoyaltyLionProductCommentDeleted($params) {
-    // xdebug_break();
 
     if (!$params['id']) return;
 
@@ -210,8 +266,12 @@ class LoyaltyLion extends Module {
     }
   }
 
-  // this is fired when an order is first created and validated, and we can use it to create the
-  // order in LoyaltyLion
+  /**
+   * Fired when an order is first created and validated
+   * 
+   * @param  [type] $params [description]
+   * @return [type]         [description]
+   */
   public function hookActionValidateOrder($params) {
 
     $order = $params['order'];
@@ -239,6 +299,9 @@ class LoyaltyLion extends Module {
       $data['total_paid'] = (string) $order->total_paid_real;
     }
 
+    if ($this->context->cookie->loyaltylion_referral_id)
+      $data['referral_id'] = $this->context->cookie->loyaltylion_referral_id;
+
     $this->loadLoyaltyLionClient();
     $response = $this->client->orders->create($data);
 
@@ -248,7 +311,12 @@ class LoyaltyLion extends Module {
     }
   }
 
-  // this is fired when an order's status changes, e.g. becoming paid
+  /**
+   * Fired when an order's status changes, e.g. becoming paid
+   * 
+   * @param  [type] $params [description]
+   * @return [type]         [description]
+   */
   public function hookActionOrderStatusPostUpdate($params) {
     $order = new Order((int) $params['id_order']);
     $this->sendOrderUpdate($order);
@@ -267,25 +335,6 @@ class LoyaltyLion extends Module {
   public function hookActionObjectOrderSlipAddAfter($params) {
     $order = new Order( (int) $params['object']->id_order );
     $this->sendOrderUpdate($order);
-  }
-
-  public function hookActionCustomerAccountAdd($params) {
-    $customer = $params['newCustomer'];
-
-    $data = array(
-      'customer_id' => $customer->id,
-      'customer_email' => $customer->email,
-      'date' => date('c'),
-    );
-
-    $this->loadLoyaltyLionClient();
-
-    $response = $this->client->activities->track('signup', $data);
-
-    if (!$response->success) {
-      Logger::addLog('[LoyaltyLion] Failed to track signup activity. API status: '
-        . $response->status . ', error: ' . $response->error, 3);
-    }
   }
 
   /**
@@ -371,48 +420,11 @@ class LoyaltyLion extends Module {
     }
   }
 
-  private function sendProductComment($comment) {
-
-  }
-
   /**
-   * Return an array of useful information about this Order, such as totals,
-   * totals paid, etc
+   * Require the PHP LoyaltyLion library and initialise it
    * 
-   * @param  [type] $order [description]
-   * @return [type]        [description]
+   * @return [type] [description]
    */
-  private function getOrderData($order) {
-    $data = array(
-      'merchant_id' => $order->id,
-      'number' => (string) $order->reference,
-    );
-
-    // PS orders have a `total_paid`, which is actually total TO pay, and also `total_paid_real`, which
-    // is (confusingly) the total which HAS been paid
-    
-    $data['total'] = (string) $order->total_paid;
-    $data['total_shipping'] = (string) $order->total_shipping;
-
-    if (floatval($order->total_paid_real) == 0) {
-      $data['payment_status'] = 'not_paid';
-    }
-    else if (floatval($order->total_paid_real) == floatval($order->total_paid)) {
-      $data['payment_status'] = 'paid';
-    }
-    else {
-      $data['payment_status'] = 'partially_paid';
-      $data['total_paid'] = (string) $order->total_paid_real;
-    }
-
-    $customer = new Customer((int) $order->id_customer);
-
-    $data['customer_id'] = $customer->id;
-    $data['customer_email'] = $customer->email;
-
-    return $data;
-  }
-
   private function loadLoyaltyLionClient() {
     require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 
       'lib' . DIRECTORY_SEPARATOR . 'loyaltylion-client' . DIRECTORY_SEPARATOR . 'main.php');
