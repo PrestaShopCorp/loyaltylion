@@ -4,6 +4,12 @@ if (!defined('_PS_VERSION_')) exit;
 
 class LoyaltyLion extends Module {
 
+  public $form_values = array(
+    'discount_amount' => '',
+    'discount_amount_currency' => '',
+    'codes' => '',
+  );
+
   public function __construct() {
     $this->name = 'loyaltylion';
     $this->tab = 'pricing_promotion';
@@ -44,80 +50,111 @@ class LoyaltyLion extends Module {
   public function getContent() {
     $output = null;
 
-    if (Tools::isSubmit('updateSubmit')) {
-      Configuration::updateValue('LOYALTYLION_TOKEN', Tools::getValue('LOYALTYLION_TOKEN'));
-      Configuration::updateValue('LOYALTYLION_SECRET', Tools::getValue('LOYALTYLION_SECRET'));
+    if (Tools::isSubmit('submitConfiguration')) {
+      Configuration::updateValue('LOYALTYLION_TOKEN', Tools::getValue('loyaltylion_token'));
+      Configuration::updateValue('LOYALTYLION_SECRET', Tools::getValue('loyaltylion_secret'));
+
+      $output .= $this->displayConfirmation($this->l('Configuration saved'));
     }
 
-    if (Tools::isSubmit('submit'.$this->name)) {
-      $token = strval(Tools::getValue('LOYALTYLION_TOKEN'));
-      $secret = strval(Tools::getValue('LOYALTYLION_SECRET'));
-    }
+    if (Tools::isSubmit('submitVoucherCodes')) {
+      // we probs need to create some vouchers now...
+      
+      $this->form_values['discount_amount'] = Tools::getValue('discount_amount');
+      $this->form_values['discount_amount_currency'] = Tools::getValue('discount_amount_currency');
+      $this->form_values['codes'] = Tools::getValue('codes');
 
-    $output .= $this->displayConfirmation($this->l('Configuration saved'));
+      $discount_amount = floatval($this->form_values['discount_amount']);
+      $discount_amount_currency = intval($this->form_values['discount_amount']);
+      $codes_str = $this->form_values['codes'];
+
+      $codes = array_filter(array_unique(preg_split("/\r\n|\n|\r/", $codes_str)), 'strlen');
+
+      if (!$discount_amount) {
+        $output .= $this->displayError( $this->l('Invalid discount amount') );
+      }
+      else if (empty($codes)) {
+        $output .= $this->displayError( $this->l('At least one code is required') );
+      }
+      else {
+        // reset form values
+        $this->form_values['discount_amount'] = '';
+        $this->form_values['discount_amount_currency'] = '';
+        $this->form_values['codes'] = '';
+
+        $problem_codes = array();
+
+        foreach ($codes as $code) {
+
+          // check if already exists, don't add it again, even though prestashop will let you (come on!)
+          $existing_codes = CartRule::getCartsRuleByCode($code, (int)$this->context->language->id);
+
+          if (!empty($existing_codes)) {
+            $problem_codes[] = $code;
+            continue;
+          }
+
+          $rule = new CartRule();
+
+          $rule->code = $code;
+          $rule->description = $this->l('Generated LoyaltyLion voucher');
+          $rule->quantity = 1;
+          $rule->quantity_per_user = 1;
+
+          $now = time();
+          $rule->date_from = date('Y-m-d H:i:s', $now);
+          $rule->date_to = date('Y-m-d H:i:s', $now + (3600 * 24 * 365 * 10)); // 10 years
+          $rule->active = 1;
+
+          $rule->reduction_amount = $discount_amount;
+          $rule->reduction_tax = true;
+          $rule->reduction_currency = $discount_amount_currency;
+
+          foreach (Language::getLanguages() as $language) {
+            $rule->name[$language['id_lang']] = $code;
+          }
+
+          if (!$rule->add()) {
+            $problem_codes[] = $code;
+          }
+        }
+
+        $created_codes = count($codes) - count($problem_codes);
+
+        if ($created_codes > 0) {
+          $output .= $this->displayConfirmation("Created {$created_codes} new voucher codes");
+        }
+
+        if (!empty($problem_codes)) {
+          $output .= $this->displayError(count($problem_codes) . " codes could not be created: " . implode(', ', $problem_codes));
+        }
+      }
+    }
 
     return $output . $this->displayForm();
   }
 
   public function displayForm() {
     $default_lang = (int) Configuration::get('PS_LANG_DEFAULT');
-         
-        // Init Fields form array
-    $fields_form[0]['form'] = array(
-      'legend' => array(
-        'title' => $this->l('Settings'),
-      ),
-      'input' => array(
-        array(
-          'type' => 'text',
-          'label' => $this->l('Token'),
-          'name' => 'LOYALTYLION_TOKEN',
-          'size' => 40,
-          'required' => true
-        ),
-        array(
-          'type' => 'text',
-          'label' => $this->l('Secret'),
-          'name' => 'LOYALTYLION_SECRET',
-          'size' => 40,
-          'required' => true
-        )
-      ),
-      'submit' => array(
-        'title' => $this->l('Save'),
-        'class' => 'button'
-      )
-    );
-     
-    $helper = new HelperForm();
+    
+    $baseUrl = 'index.php?';
+    foreach ($_GET as $k => $value) {
+      $baseUrl .= $k.'='.$value.'&';
+    }
+    $baseUrl = rtrim($baseUrl, '&');
 
-    $helper->module = $this;
-    $helper->name_controller = $this->name;
-    $helper->token = Tools::getAdminTokenLite('AdminModules');
-    $helper->currentIndex = AdminController::$currentIndex.'&configure='.$this->name;
-    $helper->default_form_language = $default_lang;
-    $helper->allow_employee_form_lang = $default_lang;
-
-    $helper->title = $this->displayName;
-    $helper->show_toolbar = true;        // false -> remove toolbar
-    $helper->toolbar_scroll = true;      // yes - > Toolbar is always visible on the top of the screen.
-    $helper->submit_action = 'updateSubmit';
-    $helper->toolbar_btn = array(
-      'save' => array(
-        'desc' => $this->l('Save'),
-        'href' => AdminController::$currentIndex.'&configure='.$this->name.'&save'.$this->name.
-        '&token='.Tools::getAdminTokenLite('AdminModules'),
-      ),
-      'back' => array(
-        'href' => AdminController::$currentIndex.'&token='.Tools::getAdminTokenLite('AdminModules'),
-        'desc' => $this->l('Back to list')
+    $this->context->smarty->assign(
+      array(
+        'action' => Tools::safeOutput($baseUrl),
+        'token' => $this->getToken(),
+        'secret' => $this->getSecret(),
+        'currencies' => Currency::getCurrencies(),
+        'defaultCurrency' => Configuration::get('PS_CURRENCY_DEFAULT'),
+        'form_values' => $this->form_values,
       )
     );
 
-    $helper->fields_value['LOYALTYLION_TOKEN'] = Configuration::get('LOYALTYLION_TOKEN');
-    $helper->fields_value['LOYALTYLION_SECRET'] = Configuration::get('LOYALTYLION_SECRET');
-         
-    return $helper->generateForm($fields_form);
+    return $this->display(__FILE__, 'form.tpl');
   }
 
   public function hookDisplayHeader() {
