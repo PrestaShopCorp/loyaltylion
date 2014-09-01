@@ -78,12 +78,10 @@ class LoyaltyLion extends Module
 			$codes = array_filter(array_unique(preg_split("/\r\n|\n|\r/", $codes_str)), 'strlen');
 
 			if (!$discount_amount)
-			{
 				$output .= $this->displayError($this->l('Invalid discount amount'));
-			} else if (empty($codes))
-			{
+			else if (empty($codes))
 				$output .= $this->displayError($this->l('At least one code is required'));
-			} else
+			else
 			{
 				// reset form values
 				$this->form_values['discount_amount'] = '';
@@ -121,27 +119,21 @@ class LoyaltyLion extends Module
 					$rule->reduction_currency = $discount_amount_currency;
 
 					foreach (Language::getLanguages() as $language)
-					{
 						$rule->name[$language['id_lang']] = $code;
-					}
+
 
 					if (!$rule->add())
-					{
 						$problem_codes[] = $code;
-					}
 				}
 
 				$created_codes = count($codes) - count($problem_codes);
 
 				if ($created_codes > 0)
-				{
 					$output .= $this->displayConfirmation("Created {$created_codes} new voucher codes");
-				}
 
 				if (!empty($problem_codes))
-				{
 					$output .= $this->displayError(count($problem_codes) . " codes could not be created: " . implode(', ', $problem_codes));
-				}
+
 			}
 		}
 
@@ -182,9 +174,8 @@ class LoyaltyLion extends Module
 
 		// if we have an id and we haven't already set a cookie for it (don't override existing ref cookie)
 		if ($referral_id && !$this->context->cookie->loyaltylion_referral_id)
-		{
 			$this->context->cookie->__set('loyaltylion_referral_id', $referral_id);
-		}
+
 
 		$customer = $this->context->customer;
 
@@ -356,12 +347,10 @@ class LoyaltyLion extends Module
 		);
 
 		if (floatval($order->total_paid_real) == 0)
-		{
 			$data['payment_status'] = 'not_paid';
-		} else if (floatval($order->total_paid_real) == floatval($order->total_paid))
-		{
+		else if (floatval($order->total_paid_real) == floatval($order->total_paid))
 			$data['payment_status'] = 'paid';
-		} else
+		else
 		{
 			$data['payment_status'] = 'partially_paid';
 			$data['total_paid'] = (string)$order->total_paid_real;
@@ -445,9 +434,7 @@ class LoyaltyLion extends Module
 
 		// cancelled?
 		if ($order->getCurrentState() == Configuration::get('PS_OS_CANCELED'))
-		{
 			$data['cancellation_status'] = 'cancelled';
-		}
 
 		// credit slip hook
 		// actionOrderSlipAdd
@@ -513,9 +500,7 @@ class LoyaltyLion extends Module
 		$options = array();
 
 		if (isset($_SERVER['LOYALTYLION_API_BASE']))
-		{
 			$options['base_uri'] = $_SERVER['LOYALTYLION_API_BASE'];
-		}
 
 		$this->client = new LoyaltyLion_Client($this->getToken(), $this->getSecret(), $options);
 	}
