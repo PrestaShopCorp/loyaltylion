@@ -132,12 +132,12 @@ class LoyaltyLion extends Module
 					$output .= $this->displayConfirmation("Created {$created_codes} new voucher codes");
 
 				if (!empty($problem_codes))
-					$output .= $this->displayError(count($problem_codes) . " codes could not be created: " . implode(', ', $problem_codes));
+					$output .= $this->displayError(count($problem_codes)." codes could not be created: ".implode(', ', $problem_codes));
 
 			}
 		}
 
-		return $output . $this->displayForm();
+		return $output.$this->displayForm();
 	}
 
 	public function displayForm()
@@ -147,7 +147,7 @@ class LoyaltyLion extends Module
 		$baseUrl = 'index.php?';
 		foreach ($_GET as $k => $value)
 		{
-			$baseUrl .= $k . '=' . $value . '&';
+			$baseUrl .= $k.'='.$value.'&';
 		}
 		$baseUrl = rtrim($baseUrl, '&');
 
@@ -188,7 +188,7 @@ class LoyaltyLion extends Module
 		if ($customer)
 		{
 			$date = date('c');
-			$auth_token = sha1($customer->id . $date . $this->getSecret());
+			$auth_token = sha1($customer->id.$date.$this->getSecret());
 
 			$this->context->smarty->assign(array(
 				'customer_id' => $customer->id,
@@ -230,7 +230,7 @@ class LoyaltyLion extends Module
 		if (!$response->success)
 		{
 			Logger::addLog('[LoyaltyLion] Failed to track signup activity. API status: '
-				. $response->status . ', error: ' . $response->error, 3);
+				. $response->status.', error: '.$response->error, 3);
 		}
 	}
 
@@ -261,7 +261,7 @@ class LoyaltyLion extends Module
 		if (!$response->success)
 		{
 			Logger::addLog('[LoyaltyLion] Failed to track review activity. API status: '
-				. $response->status . ', error: ' . $response->error, 3);
+				. $response->status.', error: '.$response->error, 3);
 		}
 
 		if (Configuration::get('PRODUCT_COMMENTS_MODERATE') !== '1')
@@ -274,7 +274,7 @@ class LoyaltyLion extends Module
 			if (!$response->success)
 			{
 				Logger::addLog('[LoyaltyLion] Failed to update review activity. API status: '
-					. $response->status . ', error: ' . $response->error, 3);
+					. $response->status.', error: '.$response->error, 3);
 			}
 		}
 	}
@@ -297,7 +297,7 @@ class LoyaltyLion extends Module
 		if (!$response->success)
 		{
 			Logger::addLog('[LoyaltyLion] Failed to update review activity. API status: '
-				. $response->status . ', error: ' . $response->error, 3);
+				. $response->status.', error: '.$response->error, 3);
 		}
 	}
 
@@ -319,7 +319,7 @@ class LoyaltyLion extends Module
 		if (!$response->success)
 		{
 			Logger::addLog('[LoyaltyLion] Failed to update review activity. API status: '
-				. $response->status . ', error: ' . $response->error, 3);
+				. $response->status.', error: '.$response->error, 3);
 		}
 	}
 
@@ -364,8 +364,8 @@ class LoyaltyLion extends Module
 
 		if (!$response->success)
 		{
-			Logger::addLog('[LoyaltyLion] Failed to create order (' . $order->id . '). API status: '
-				. $response->status . ', error: ' . $response->error, 3);
+			Logger::addLog('[LoyaltyLion] Failed to create order ('.$order->id.'). API status: '
+				. $response->status.', error: '.$response->error, 3);
 		}
 	}
 
@@ -482,8 +482,8 @@ class LoyaltyLion extends Module
 
 		if (!$response->success)
 		{
-			Logger::addLog('[LoyaltyLion] Failed to update order (' . $order->id . '). API status: '
-				. $response->status . ', error: ' . $response->error, 3);
+			Logger::addLog('[LoyaltyLion] Failed to update order ('.$order->id.'). API status: '
+				. $response->status.', error: '.$response->error, 3);
 		}
 	}
 
@@ -494,8 +494,8 @@ class LoyaltyLion extends Module
 	 */
 	private function loadLoyaltyLionClient()
 	{
-		require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR .
-			'lib' . DIRECTORY_SEPARATOR . 'loyaltylion-client' . DIRECTORY_SEPARATOR . 'main.php');
+		require_once(dirname(__FILE__).DIRECTORY_SEPARATOR .
+			'lib'.DIRECTORY_SEPARATOR.'loyaltylion-client'.DIRECTORY_SEPARATOR.'main.php');
 
 		$options = array();
 
