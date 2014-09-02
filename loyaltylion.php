@@ -457,7 +457,7 @@ class LoyaltyLion extends Module
 
 		/*
 		if we have at least one credit slip that should mean we have had a refund, so let's add them
-			NOTE: the "amount" is the unit price of the product * quantity refunded, plus shipping if they opted
+		NOTE: the "amount" is the unit price of the product * quantity refunded, plus shipping if they opted
 			refund the shipping cost. However PS doesn't stop you from refunding shipping cost more than
 			once if you do multiple refunds, so the refund total could end up more than the actual total
 			... if this happens we will just cap it to the order total so it doesn't confuse loyaltylion
