@@ -46,11 +46,6 @@ class LoyaltyLion extends Module
 			$this->registerHook('actionCustomerAccountAdd');
 	}
 
-	public function uninstall()
-	{
-		parent::uninstall();
-	}
-
 	public function getContent()
 	{
 		$output = null;
@@ -132,7 +127,7 @@ class LoyaltyLion extends Module
 					$output .= $this->displayConfirmation("Created {$created_codes} new voucher codes");
 
 				if (!empty($problem_codes))
-					$output .= $this->displayError(count($problem_codes)." codes could not be created: ".implode(', ', $problem_codes));
+					$output .= $this->displayError(count($problem_codes).' codes could not be created: '.implode(', ', $problem_codes));
 
 			}
 		}
@@ -144,16 +139,16 @@ class LoyaltyLion extends Module
 	{
 		$default_lang = (int)Configuration::get('PS_LANG_DEFAULT');
 
-		$baseUrl = 'index.php?';
+		$base_url = 'index.php?';
 		foreach ($_GET as $k => $value)
-		{
-			$baseUrl .= $k.'='.$value.'&';
-		}
-		$baseUrl = rtrim($baseUrl, '&');
+			$base_url .= $k.'='.$value.'&';
+
+
+		$base_url = rtrim($base_url, '&');
 
 		$this->context->smarty->assign(
 			array(
-				'action' => Tools::safeOutput($baseUrl),
+				'action' => Tools::safeOutput($base_url),
 				'token' => $this->getToken(),
 				'secret' => $this->getSecret(),
 				'currencies' => Currency::getCurrencies(),
@@ -167,7 +162,6 @@ class LoyaltyLion extends Module
 
 	public function hookDisplayHeader()
 	{
-
 		// prestashop appears to run this hook prior to starting output, so it should be safe to
 		// set the referral cookie here if we have one !
 		$referral_id = Tools::getValue('ll_ref_id');
@@ -230,7 +224,7 @@ class LoyaltyLion extends Module
 		if (!$response->success)
 		{
 			Logger::addLog('[LoyaltyLion] Failed to track signup activity. API status: '
-				. $response->status.', error: '.$response->error, 3);
+        .$response->status.', error: '.$response->error, 3);
 		}
 	}
 
@@ -243,7 +237,6 @@ class LoyaltyLion extends Module
 	 */
 	public function hookActionObjectProductCommentAddAfter($params)
 	{
-
 		$comment = $params['object'];
 		$customer = new Customer($comment->id_customer);
 
@@ -274,7 +267,7 @@ class LoyaltyLion extends Module
 			if (!$response->success)
 			{
 				Logger::addLog('[LoyaltyLion] Failed to update review activity. API status: '
-					. $response->status.', error: '.$response->error, 3);
+          .$response->status.', error: '.$response->error, 3);
 			}
 		}
 	}
@@ -288,7 +281,6 @@ class LoyaltyLion extends Module
 	 */
 	public function hookActionLoyaltyLionProductCommentAccepted($params)
 	{
-
 		if (!$params['id']) return;
 
 		$this->loadLoyaltyLionClient();
@@ -297,7 +289,7 @@ class LoyaltyLion extends Module
 		if (!$response->success)
 		{
 			Logger::addLog('[LoyaltyLion] Failed to update review activity. API status: '
-				. $response->status.', error: '.$response->error, 3);
+        .$response->status.', error: '.$response->error, 3);
 		}
 	}
 
@@ -310,7 +302,6 @@ class LoyaltyLion extends Module
 	 */
 	public function hookActionLoyaltyLionProductCommentDeleted($params)
 	{
-
 		if (!$params['id']) return;
 
 		$this->loadLoyaltyLionClient();
@@ -319,7 +310,7 @@ class LoyaltyLion extends Module
 		if (!$response->success)
 		{
 			Logger::addLog('[LoyaltyLion] Failed to update review activity. API status: '
-				. $response->status.', error: '.$response->error, 3);
+        .$response->status.', error: '.$response->error, 3);
 		}
 	}
 
@@ -331,7 +322,6 @@ class LoyaltyLion extends Module
 	 */
 	public function hookActionValidateOrder($params)
 	{
-
 		$order = $params['order'];
 		$customer = new Customer((int)$order->id_customer);
 
@@ -365,7 +355,7 @@ class LoyaltyLion extends Module
 		if (!$response->success)
 		{
 			Logger::addLog('[LoyaltyLion] Failed to create order ('.$order->id.'). API status: '
-				. $response->status.', error: '.$response->error, 3);
+        .$response->status.', error: '.$response->error, 3);
 		}
 	}
 
@@ -390,8 +380,10 @@ class LoyaltyLion extends Module
 		$this->sendOrderUpdate($params['order']);
 	}
 
-	// this is a more reliable way to discover when credit slips are created, as the standard orderslip
-	// hook does not fire on partial refunds (surprising? no)
+	/*
+	 this is a more reliable way to discover when credit slips are created, as the standard orderslip
+	 hook does not fire on partial refunds (surprising? no)
+	 */
 	public function hookActionObjectOrderSlipAddAfter($params)
 	{
 		$order = new Order((int)$params['object']->id_order);
@@ -406,12 +398,13 @@ class LoyaltyLion extends Module
 	 */
 	private function sendOrderUpdate($order)
 	{
-
 		if (!$order) return;
 
 		$data = array(
-			// an order "reference" is not unique normally, but this method will make sure it is (it adds a #2 etc)
-			// to the reference if there are multiple orders with the same one
+			/*
+      an order "reference" is not unique normally, but this method will make sure it is (it adds a #2 etc)
+			to the reference if there are multiple orders with the same one
+			*/
 			'number' => (string)$order->getUniqReference(),
 			'refund_status' => 'not_refunded',
 			'cancellation_status' => 'not_cancelled',
@@ -422,36 +415,41 @@ class LoyaltyLion extends Module
 		{
 			$data['payment_status'] = 'not_paid';
 			$data['total_paid'] = 0;
-		} else if (floatval($order->total_paid_real) == floatval($order->total_paid))
+		}
+    else if (floatval($order->total_paid_real) == floatval($order->total_paid))
 		{
 			$data['payment_status'] = 'paid';
 			$data['total_paid'] = (string)$order->total_paid;
-		} else
+		}
+    else
 		{
 			$data['payment_status'] = 'partially_paid';
 			$data['total_paid'] = (string)$order->total_paid_real;
 		}
 
-		// cancelled?
+		/* cancelled? */
 		if ($order->getCurrentState() == Configuration::get('PS_OS_CANCELED'))
 			$data['cancellation_status'] = 'cancelled';
+    /*
+		credit slip hook
+		actionOrderSlipAdd
+		actionProductCancel
 
-		// credit slip hook
-		// actionOrderSlipAdd
-		// actionProductCancel
-
-		// refunds in prestashop are a bit of a clusterfuck, so this isn't too simple and might still have bugs
+		refunds in prestashop are a bit of a clusterfuck, so this isn't too simple and might still have bugs
+    */
 
 		$total_refunded = 0;
 
-		// i think we can simplify this by querying for credit (order) slips attached to this order
+		/* i think we can simplify this by querying for credit (order) slips attached to this order */
 		$credit_slips = OrderSlip::getOrdersSlip($order->id_customer, $order->id);
 
-		// if we have at least one credit slip that should mean we have had a refund, so let's add them
-		// NOTE: the "amount" is the unit price of the product * quantity refunded, plus shipping if they opted
-		//       refund the shipping cost. However PS doesn't stop you from refunding shipping cost more than
-		//       once if you do multiple refunds, so the refund total could end up more than the actual total
-		//       ... if this happens we will just cap it to the order total so it doesn't confuse loyaltylion
+    /*
+		if we have at least one credit slip that should mean we have had a refund, so let's add them
+		NOTE: the "amount" is the unit price of the product * quantity refunded, plus shipping if they opted
+		      refund the shipping cost. However PS doesn't stop you from refunding shipping cost more than
+		      once if you do multiple refunds, so the refund total could end up more than the actual total
+		       ... if this happens we will just cap it to the order total so it doesn't confuse loyaltylion
+    */
 
 		foreach ($credit_slips as $slip)
 		{
@@ -468,14 +466,16 @@ class LoyaltyLion extends Module
 				$data['total_refunded'] = $total_refunded;
 			} else
 			{
-				// if the total refunded is equal (or, perhaps, greater than?) the total cost of the order,
-				// we'll just class that as a full refund
+				/*
+        if the total refunded is equal (or, perhaps, greater than?) the total cost of the order,
+				we'll just class that as a full refund
+				*/
 				$data['refund_status'] = 'refunded';
 				$data['total_refunded'] = floatval($order->total_paid);
 			}
 		}
 
-		// refund state: PS_OS_REFUND
+		/* refund state: PS_OS_REFUND */
 
 		$this->loadLoyaltyLionClient();
 		$response = $this->client->orders->update($order->id, $data);
@@ -483,7 +483,7 @@ class LoyaltyLion extends Module
 		if (!$response->success)
 		{
 			Logger::addLog('[LoyaltyLion] Failed to update order ('.$order->id.'). API status: '
-				. $response->status.', error: '.$response->error, 3);
+        .$response->status.', error: '.$response->error, 3);
 		}
 	}
 
@@ -494,7 +494,7 @@ class LoyaltyLion extends Module
 	 */
 	private function loadLoyaltyLionClient()
 	{
-		require_once(dirname(__FILE__).DIRECTORY_SEPARATOR .
+		require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.
 			'lib'.DIRECTORY_SEPARATOR.'loyaltylion-client'.DIRECTORY_SEPARATOR.'main.php');
 
 		$options = array();
