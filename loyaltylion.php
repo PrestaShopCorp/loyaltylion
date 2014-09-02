@@ -427,7 +427,8 @@ class LoyaltyLion extends Module
 		{
 			$data['payment_status'] = 'not_paid';
 			$data['total_paid'] = 0;
-		} else if (floatval($order->total_paid_real) == floatval($order->total_paid))
+		}
+		else if (floatval($order->total_paid_real) == floatval($order->total_paid))
 		{
 			$data['payment_status'] = 'paid';
 			$data['total_paid'] = (string)$order->total_paid;
