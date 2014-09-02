@@ -27,7 +27,7 @@ class LoyaltyLion extends Module
 
 		$this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
 
-		// Logger::addLog(var_export($this, true));
+		/* Logger::addLog(var_export($this, true)); */
 	}
 
 	public function install()
@@ -38,7 +38,7 @@ class LoyaltyLion extends Module
 			$this->registerHook('actionOrderStatusPostUpdate') &&
 			$this->registerHook('actionValidateOrder') &&
 			$this->registerHook('actionProductCancel') &&
-			// $this->registerHook('actionOrderSlipAdd') &&
+			/* $this->registerHook('actionOrderSlipAdd') && */
 			$this->registerHook('actionObjectOrderSlipAddAfter') &&
 			$this->registerHook('actionObjectProductCommentAddAfter') &&
 			$this->registerHook('actionLoyaltyLionProductCommentAccepted') &&
@@ -60,7 +60,7 @@ class LoyaltyLion extends Module
 
 		if (Tools::isSubmit('submitVoucherCodes'))
 		{
-			// we probs need to create some vouchers now...
+			/* we probs need to create some vouchers now... */
 
 			$this->form_values['discount_amount'] = Tools::getValue('discount_amount');
 			$this->form_values['discount_amount_currency'] = Tools::getValue('discount_amount_currency');
@@ -78,7 +78,7 @@ class LoyaltyLion extends Module
 				$output .= $this->displayError($this->l('At least one code is required'));
 			else
 			{
-				// reset form values
+				/* reset form values */
 				$this->form_values['discount_amount'] = '';
 				$this->form_values['discount_amount_currency'] = '';
 				$this->form_values['codes'] = '';
@@ -88,7 +88,7 @@ class LoyaltyLion extends Module
 				foreach ($codes as $code)
 				{
 
-					// check if already exists, don't add it again, even though prestashop will let you (come on!)
+					/* check if already exists, don't add it again, even though prestashop will let you (come on!) */
 					$existing_codes = CartRule::getCartsRuleByCode($code, (int)$this->context->language->id);
 
 					if (!empty($existing_codes))
@@ -106,7 +106,7 @@ class LoyaltyLion extends Module
 
 					$now = time();
 					$rule->date_from = date('Y-m-d H:i:s', $now);
-					$rule->date_to = date('Y-m-d H:i:s', $now + (3600 * 24 * 365 * 10)); // 10 years
+					$rule->date_to = date('Y-m-d H:i:s', $now + (3600 * 24 * 365 * 10)); /* 10 years */
 					$rule->active = 1;
 
 					$rule->reduction_amount = $discount_amount;
@@ -162,11 +162,13 @@ class LoyaltyLion extends Module
 
 	public function hookDisplayHeader()
 	{
-		// prestashop appears to run this hook prior to starting output, so it should be safe to
-		// set the referral cookie here if we have one !
+		/*
+		prestashop appears to run this hook prior to starting output, so it should be safe to
+		set the referral cookie here if we have one !
+		*/
 		$referral_id = Tools::getValue('ll_ref_id');
 
-		// if we have an id and we haven't already set a cookie for it (don't override existing ref cookie)
+		/* if we have an id and we haven't already set a cookie for it (don't override existing ref cookie) */
 		if ($referral_id && !$this->context->cookie->loyaltylion_referral_id)
 			$this->context->cookie->__set('loyaltylion_referral_id', $referral_id);
 
@@ -261,8 +263,10 @@ class LoyaltyLion extends Module
 
 		if (Configuration::get('PRODUCT_COMMENTS_MODERATE') !== '1')
 		{
-			// reviews do not require moderation, which means this one will be shown immediately and we should
-			// send an update now to approve it
+			/*
+			reviews do not require moderation, which means this one will be shown immediately and we should
+			send an update now to approve it
+     	*/
 
 			$response = $this->client->activities->update('review', $comment->id, array('state' => 'approved'));
 
@@ -331,8 +335,10 @@ class LoyaltyLion extends Module
 		$customer = new Customer((int)$order->id_customer);
 
 		$data = array(
-			// an order "reference" is not unique normally, but this method will make sure it is (it adds a #2 etc)
-			// to the reference if there are multiple orders with the same one
+			/*
+			an order "reference" is not unique normally, but this method will make sure it is (it adds a #2 etc)
+			to the reference if there are multiple orders with the same one
+			*/
 			'number' => (string)$order->getUniqReference(),
 			'total' => (string)$order->total_paid,
 			'total_shipping' => (string)$order->total_shipping,
@@ -377,10 +383,12 @@ class LoyaltyLion extends Module
 		$this->sendOrderUpdate($order);
 	}
 
-	// at the moment this hook is not really used, as we only consider refunds via order/credit slips,
-	// which are not even created when this hook fires (we get them with the "actionObjectOrderSlipAddAfter"
-	// hook, below) - but we'll register this hook anyway for future proofing, as we might want to support
-	// refunds without a credit slip
+	/*
+	at the moment this hook is not really used, as we only consider refunds via order/credit slips,
+	which are not even created when this hook fires (we get them with the "actionObjectOrderSlipAddAfter"
+	hook, below) - but we'll register this hook anyway for future proofing, as we might want to support
+	refunds without a credit slip
+	*/
 	public function hookActionProductCancel($params)
 	{
 		$this->sendOrderUpdate($params['order']);
