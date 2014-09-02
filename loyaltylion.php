@@ -116,7 +116,6 @@ class LoyaltyLion extends Module
 					foreach (Language::getLanguages() as $language)
 						$rule->name[$language['id_lang']] = $code;
 
-
 					if (!$rule->add())
 						$problem_codes[] = $code;
 				}
@@ -142,7 +141,6 @@ class LoyaltyLion extends Module
 		$base_url = 'index.php?';
 		foreach ($_GET as $k => $value)
 			$base_url .= $k.'='.$value.'&';
-
 
 		$base_url = rtrim($base_url, '&');
 
@@ -171,7 +169,6 @@ class LoyaltyLion extends Module
 		/* if we have an id and we haven't already set a cookie for it (don't override existing ref cookie) */
 		if ($referral_id && !$this->context->cookie->loyaltylion_referral_id)
 			$this->context->cookie->__set('loyaltylion_referral_id', $referral_id);
-
 
 		$customer = $this->context->customer;
 
