@@ -38,7 +38,8 @@ class LoyaltyLion_Connection
 			CURLOPT_USERPWD => $this->token.':'.$this->secret,
 		);
 
-		switch ($method) {
+		switch ($method)
+		{
 			case 'POST':
 				$options += array(
 					CURLOPT_POST => true,
@@ -50,7 +51,8 @@ class LoyaltyLion_Connection
 				);
 		}
 
-		if (!empty($data)) {
+		if (!empty($data))
+		{
 			$body = json_encode($data);
 
 			$options += array(
@@ -71,12 +73,14 @@ class LoyaltyLion_Connection
 		$error_code = curl_errno($curl);
 		$error_msg = curl_error($curl);
 
-		if ($error_code !== 0) {
+		if ($error_code !== 0)
+		{
 			$response = array(
 				'status' => $headers['http_code'],
 				'error' => $error_msg,
 			);
-		} else {
+		} else
+		{
 			$response = array(
 				'status' => $headers['http_code'],
 				'headers' => $headers,

@@ -15,7 +15,8 @@ class LoyaltyLion_Client
 		$this->token = $token;
 		$this->secret = $secret;
 
-		if (empty($this->token) || empty($this->secret)) {
+		if (empty($this->token) || empty($this->secret))
+		{
 			throw new Exception("Please provide a valid token and secret (token: ${token}, secret: ${secret})");
 		}
 
@@ -44,7 +45,8 @@ class LoyaltyLion_Client
 
 		$response = $this->connection->post('/customers/authenticate', $params);
 
-		if (isset($response->error)) {
+		if (isset($response->error))
+		{
 			echo "LoyaltyLion client error: ".$response->error;
 		}
 
@@ -53,16 +55,19 @@ class LoyaltyLion_Client
 
 		$json = json_decode($response->body);
 
-		if ($json && $json->auth_token) {
+		if ($json && $json->auth_token)
+		{
 			return $json->auth_token;
-		} else {
+		} else
+		{
 			return null;
 		}
 	}
 
 	protected function parseResponse($response)
 	{
-		if (isset($response->error)) {
+		if (isset($response->error))
+		{
 			// this kind of error is from curl itself, e.g. a request timeout, so just return that error
 			return (object)array(
 				'success' => false,
@@ -75,7 +80,8 @@ class LoyaltyLion_Client
 			'success' => (int)$response->status >= 200 && (int)$response->status <= 204
 		);
 
-		if (!$result['success']) {
+		if (!$result['success'])
+		{
 			// even if curl succeeded, it can still fail if the request was invalid - we
 			// usually have the error as the body so just stick that in
 			$result['error'] = $response->body;

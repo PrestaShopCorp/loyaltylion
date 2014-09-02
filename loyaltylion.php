@@ -50,14 +50,16 @@ class LoyaltyLion extends Module
 	{
 		$output = null;
 
-		if (Tools::isSubmit('submitConfiguration')) {
+		if (Tools::isSubmit('submitConfiguration'))
+		{
 			Configuration::updateValue('LOYALTYLION_TOKEN', Tools::getValue('loyaltylion_token'));
 			Configuration::updateValue('LOYALTYLION_SECRET', Tools::getValue('loyaltylion_secret'));
 
 			$output .= $this->displayConfirmation($this->l('Configuration saved'));
 		}
 
-		if (Tools::isSubmit('submitVoucherCodes')) {
+		if (Tools::isSubmit('submitVoucherCodes'))
+		{
 			// we probs need to create some vouchers now...
 
 			$this->form_values['discount_amount'] = Tools::getValue('discount_amount');
@@ -74,7 +76,8 @@ class LoyaltyLion extends Module
 				$output .= $this->displayError($this->l('Invalid discount amount'));
 			else if (empty($codes))
 				$output .= $this->displayError($this->l('At least one code is required'));
-			else {
+			else
+			{
 				// reset form values
 				$this->form_values['discount_amount'] = '';
 				$this->form_values['discount_amount_currency'] = '';
@@ -82,12 +85,14 @@ class LoyaltyLion extends Module
 
 				$problem_codes = array();
 
-				foreach ($codes as $code) {
+				foreach ($codes as $code)
+				{
 
 					// check if already exists, don't add it again, even though prestashop will let you (come on!)
 					$existing_codes = CartRule::getCartsRuleByCode($code, (int)$this->context->language->id);
 
-					if (!empty($existing_codes)) {
+					if (!empty($existing_codes))
+					{
 						$problem_codes[] = $code;
 						continue;
 					}
@@ -174,7 +179,8 @@ class LoyaltyLion extends Module
 			'platform_host' => $this->getPlatformHost(),
 		));
 
-		if ($customer) {
+		if ($customer)
+		{
 			$date = date('c');
 			$auth_token = sha1($customer->id.$date.$this->getSecret());
 
@@ -216,7 +222,8 @@ class LoyaltyLion extends Module
 
 		$response = $this->client->activities->track('signup', $data);
 
-		if (!$response->success) {
+		if (!$response->success)
+		{
 			Logger::addLog('[LoyaltyLion] Failed to track signup activity. API status: '
 				.$response->status.', error: '.$response->error, 3);
 		}
@@ -246,18 +253,21 @@ class LoyaltyLion extends Module
 
 		$response = $this->client->activities->track('review', $data);
 
-		if (!$response->success) {
+		if (!$response->success)
+		{
 			Logger::addLog('[LoyaltyLion] Failed to track review activity. API status: '
 				.$response->status.', error: '.$response->error, 3);
 		}
 
-		if (Configuration::get('PRODUCT_COMMENTS_MODERATE') !== '1') {
+		if (Configuration::get('PRODUCT_COMMENTS_MODERATE') !== '1')
+		{
 			// reviews do not require moderation, which means this one will be shown immediately and we should
 			// send an update now to approve it
 
 			$response = $this->client->activities->update('review', $comment->id, array('state' => 'approved'));
 
-			if (!$response->success) {
+			if (!$response->success)
+			{
 				Logger::addLog('[LoyaltyLion] Failed to update review activity. API status: '
 					.$response->status.', error: '.$response->error, 3);
 			}
@@ -279,7 +289,8 @@ class LoyaltyLion extends Module
 		$this->loadLoyaltyLionClient();
 		$response = $this->client->activities->update('review', $params['id'], array('state' => 'approved'));
 
-		if (!$response->success) {
+		if (!$response->success)
+		{
 			Logger::addLog('[LoyaltyLion] Failed to update review activity. API status: '
 				.$response->status.', error: '.$response->error, 3);
 		}
@@ -300,7 +311,8 @@ class LoyaltyLion extends Module
 		$this->loadLoyaltyLionClient();
 		$response = $this->client->activities->update('review', $params['id'], array('state' => 'declined'));
 
-		if (!$response->success) {
+		if (!$response->success)
+		{
 			Logger::addLog('[LoyaltyLion] Failed to update review activity. API status: '
 				.$response->status.', error: '.$response->error, 3);
 		}
@@ -333,7 +345,8 @@ class LoyaltyLion extends Module
 			$data['payment_status'] = 'not_paid';
 		else if (floatval($order->total_paid_real) == floatval($order->total_paid))
 			$data['payment_status'] = 'paid';
-		else {
+		else
+		{
 			$data['payment_status'] = 'partially_paid';
 			$data['total_paid'] = (string)$order->total_paid_real;
 		}
@@ -344,7 +357,8 @@ class LoyaltyLion extends Module
 		$this->loadLoyaltyLionClient();
 		$response = $this->client->orders->create($data);
 
-		if (!$response->success) {
+		if (!$response->success)
+		{
 			Logger::addLog('[LoyaltyLion] Failed to create order ('.$order->id.'). API status: '
 				.$response->status.', error: '.$response->error, 3);
 		}
@@ -404,13 +418,16 @@ class LoyaltyLion extends Module
 			'total_refunded' => 0,
 		);
 
-		if (floatval($order->total_paid_real) == 0) {
+		if (floatval($order->total_paid_real) == 0)
+		{
 			$data['payment_status'] = 'not_paid';
 			$data['total_paid'] = 0;
-		} else if (floatval($order->total_paid_real) == floatval($order->total_paid)) {
+		} else if (floatval($order->total_paid_real) == floatval($order->total_paid))
+		{
 			$data['payment_status'] = 'paid';
 			$data['total_paid'] = (string)$order->total_paid;
-		} else {
+		} else
+		{
 			$data['payment_status'] = 'partially_paid';
 			$data['total_paid'] = (string)$order->total_paid_real;
 		}
@@ -439,17 +456,21 @@ class LoyaltyLion extends Module
 								 ... if this happens we will just cap it to the order total so it doesn't confuse loyaltylion
 		*/
 
-		foreach ($credit_slips as $slip) {
+		foreach ($credit_slips as $slip)
+		{
 			if (!$slip['amount']) continue;
 
 			$total_refunded += $slip['amount'];
 		}
 
-		if ($total_refunded > 0) {
-			if ($total_refunded < floatval($order->total_paid)) {
+		if ($total_refunded > 0)
+		{
+			if ($total_refunded < floatval($order->total_paid))
+			{
 				$data['refund_status'] = 'partially_refunded';
 				$data['total_refunded'] = $total_refunded;
-			} else {
+			} else
+			{
 				/*
 				if the total refunded is equal (or, perhaps, greater than?) the total cost of the order,
 				we'll just class that as a full refund
@@ -464,7 +485,8 @@ class LoyaltyLion extends Module
 		$this->loadLoyaltyLionClient();
 		$response = $this->client->orders->update($order->id, $data);
 
-		if (!$response->success) {
+		if (!$response->success)
+		{
 			Logger::addLog('[LoyaltyLion] Failed to update order ('.$order->id.'). API status: '
 				.$response->status.', error: '.$response->error, 3);
 		}

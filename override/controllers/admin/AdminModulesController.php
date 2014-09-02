@@ -20,22 +20,26 @@ class AdminModulesController extends AdminModulesControllerCore
 
 		if ((Tools::getValue('module_name') == 'productcomments' || Tools::getValue('configure') == 'productcomments')
 			&& (in_array($action, array('accept', 'delete')) || !empty($delete_action))
-		) {
+		)
+		{
 
 			$product_comments = empty($delete_action)
 				? Tools::getValue('id_product_comment')
 				: Tools::getValue('delete_id_product_comment');
 
-			foreach ($product_comments as $id) {
+			foreach ($product_comments as $id)
+			{
 				if (!$id) continue;
 
-				switch ($action) {
+				switch ($action)
+				{
 					case 'accept':
 						return Hook::exec('actionLoyaltyLionProductCommentAccepted', array('id' => $id));
 					case 'delete':
 						return Hook::exec('actionLoyaltyLionProductCommentDeleted', array('id' => $id));
 					default:
-						if (!empty($delete_action)) {
+						if (!empty($delete_action))
+						{
 							return Hook::exec('actionLoyaltyLionProductCommentDeleted', array('id' => $id));
 						}
 				}
