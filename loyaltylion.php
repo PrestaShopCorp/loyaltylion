@@ -434,7 +434,8 @@ class LoyaltyLion extends Module
 		{
 			$data['payment_status'] = 'paid';
 			$data['total_paid'] = (string)$order->total_paid;
-		} else
+		}
+		else
 		{
 			$data['payment_status'] = 'partially_paid';
 			$data['total_paid'] = (string)$order->total_paid_real;
