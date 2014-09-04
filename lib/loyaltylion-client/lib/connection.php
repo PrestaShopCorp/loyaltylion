@@ -22,9 +22,9 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 *
-*  @author LoyaltyLion <support@loyaltylion.com>
-*  @copyright  2012-2014 LoyaltyLion
-*  @license    http://opensource.org/licenses/MIT  The MIT License
+* @author    LoyaltyLion <support@loyaltylion.com>
+* @copyright 2012-2014 LoyaltyLion
+* @license   http://opensource.org/licenses/MIT  The MIT License
 */
 
 class LoyaltyLion_Connection
