@@ -50,7 +50,7 @@ ${*
 <br>
 <fieldset>
     <legend>{l s='Create multiple voucher codes' mod='loyaltylion'}</legend>
-    <form action="{$action}" method='post'>
+    <form action="{$action|escape}" method='post'>
         <label>{l s='Discount amount' mod='loyaltylion'}</label>
 
         <div class='margin-form'>

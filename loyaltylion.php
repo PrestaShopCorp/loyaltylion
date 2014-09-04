@@ -1,5 +1,5 @@
 <?php
-/*
+/**
 * The MIT License (MIT)
 *
 * Copyright (c) 2014 LoyaltyLion
@@ -10,10 +10,10 @@
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so, subject to the following conditions:
-
+*
 * The above copyright notice and this permission notice shall be included in
 * all copies or substantial portions of the Software.
-
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -60,7 +60,8 @@ class LoyaltyLion extends Module
 	public function install()
 	{
 		if (!function_exists('curl_init'))
-			$this->setError($this->l('LoyaltyLion needs the PHP Curl extension, please ask your hosting provider to enable it before installing LoyaltyLion.'));
+			$this->setError($this->l('LoyaltyLion needs the PHP Curl extension. Please ask your hosting ' +
+				'provider to enable it before installing LoyaltyLion.'));
 
 		return parent::install() &&
 			$this->registerHook('displayHeader') &&
