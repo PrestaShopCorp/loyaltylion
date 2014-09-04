@@ -139,7 +139,8 @@ class LoyaltyLion extends Module {
     
     $baseUrl = 'index.php?';
     foreach ($_GET as $k => $value) {
-      $baseUrl .= $k.'='.$value.'&';
+      // don't include conf as that is passed in when app is installed and doesn't need to stay :)
+      if (!in_array($k, array('conf'))) $baseUrl .= $k.'='.$value.'&';
     }
     $baseUrl = rtrim($baseUrl, '&');
 
