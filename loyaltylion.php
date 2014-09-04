@@ -97,8 +97,8 @@ class LoyaltyLion extends Module
 			$this->form_values['discount_amount_currency'] = Tools::getValue('discount_amount_currency');
 			$this->form_values['codes'] = Tools::getValue('codes');
 
-			$discount_amount = floatval($this->form_values['discount_amount']);
-			$discount_amount_currency = intval($this->form_values['discount_amount']);
+			$discount_amount = (float)$this->form_values['discount_amount'];
+			$discount_amount_currency = (int)$this->form_values['discount_amount'];
 			$codes_str = $this->form_values['codes'];
 
 			$codes = array_filter(array_unique(preg_split("/\r\n|\n|\r/", $codes_str)), 'strlen');
@@ -167,7 +167,7 @@ class LoyaltyLion extends Module
 
 	public function displayForm()
 	{
-		$default_lang = (int)Configuration::get('PS_LANG_DEFAULT');
+		// $default_lang = (int)Configuration::get('PS_LANG_DEFAULT');
 
 		$base_url = 'index.php?';
 		foreach ($_GET as $k => $value)
@@ -376,9 +376,9 @@ class LoyaltyLion extends Module
 			'merchant_id' => $order->id,
 		);
 
-		if (floatval($order->total_paid_real) == 0)
+		if ((float)$order->total_paid_real == 0)
 			$data['payment_status'] = 'not_paid';
-		else if (floatval($order->total_paid_real) == floatval($order->total_paid))
+		else if ((float)$order->total_paid_real == (float)$order->total_paid)
 			$data['payment_status'] = 'paid';
 		else
 		{
@@ -455,12 +455,12 @@ class LoyaltyLion extends Module
 			'total_refunded' => 0,
 		);
 
-		if (floatval($order->total_paid_real) == 0)
+		if ((float)$order->total_paid_real == 0)
 		{
 			$data['payment_status'] = 'not_paid';
 			$data['total_paid'] = 0;
 		}
-		else if (floatval($order->total_paid_real) == floatval($order->total_paid))
+		else if ((float)$order->total_paid_real == (float)$order->total_paid)
 		{
 			$data['payment_status'] = 'paid';
 			$data['total_paid'] = (string)$order->total_paid;
@@ -507,7 +507,7 @@ class LoyaltyLion extends Module
 
 		if ($total_refunded > 0)
 		{
-			if ($total_refunded < floatval($order->total_paid))
+			if ($total_refunded < (float)$order->total_paid)
 			{
 				$data['refund_status'] = 'partially_refunded';
 				$data['total_refunded'] = $total_refunded;
@@ -519,7 +519,7 @@ class LoyaltyLion extends Module
 				we'll just class that as a full refund
 				*/
 				$data['refund_status'] = 'refunded';
-				$data['total_refunded'] = floatval($order->total_paid);
+				$data['total_refunded'] = (float)$order->total_paid;
 			}
 		}
 
