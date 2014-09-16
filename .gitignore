@@ -1,3 +1,5 @@
 .DS_Store
 config.xml
 .idea/
+.sass-cache/
+css/*.scss

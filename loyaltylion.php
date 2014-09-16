@@ -187,7 +187,7 @@ class LoyaltyLion extends Module
 			)
 		);
 
-		return $this->display(__FILE__, 'form.tpl');
+		return $this->display(__FILE__, 'views/templates/admin/form.tpl');
 	}
 
 	public function hookDisplayHeader()
