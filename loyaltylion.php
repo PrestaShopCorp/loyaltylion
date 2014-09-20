@@ -445,7 +445,7 @@ class LoyaltyLion extends Module
 	}
 
 	/**
-	 * Fired when an order is cancelled
+	 * Fired when a product is removed from an order
 	 * 
 	 * @param  [type] $params [description]
 	 */

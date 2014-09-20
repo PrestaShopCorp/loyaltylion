@@ -28,19 +28,26 @@ We use this to do two things:
 
 ### hookActionValidateOrder
 
-We use this hook to track a new order to LoyaltyLion when one is placed and validated with the store. This is tracked to the LoyaltyLion API using the LoyaltyLion PHP Client (see below for an explanation of this library).
+We use this hook to track a new order to LoyaltyLion when one is placed and validated with the store. This is tracked to the LoyaltyLion API using the LoyaltyLion PHP Client (see above, *Items of interest*, for an explanation of this library).
 
 ### hookActionOrderStatusPostUpdate
-
-We use this to notify the LoyaltyLion API about changes to order, e.g. going from `unpaid` to `paid`.
-
 ### hookActionObjectOrderSlipAddAfter
+### hookActionProductCancel
 
-We use this to be notified when an order slip has been added to an order, which we then send to the LoyaltyLion API as a potential refund.
+For all "order update" type hooks, we send a full, idempotent copy of the order to the LoyaltyLion API. This is more robust than trying to send individual updates whenever something happens (i.e. "$20 was partially paid"). Instead, if an order was partially paid, one of the above hooks would fire, and we would get the current complete state of the order (which would include the fact that $20 has now been paid) and send the whole lot to our API.
 
 ### hookActionCustomerAccountAdd
 
 We use this hook to send a "sign up" event to the LoyaltyLion API when a customer signs up. If they have a referral cookie, we'll send this too so we know that this new customer was referred.
+
+### hookActionObjectProductCommentAddAfter
+
+We use this hook to be notified when a new Product Comment (i.e. review) has been added, and track this as an event to the LoyaltyLion API.
+
+### hookActionLoyaltyLionProductCommentAccepted
+### hookActionLoyaltyLionProductCommentDeleted
+
+These two custom hooks are added by our `AdminModulesController::postProcess` override and allow us to be notified when a comment is approved or deleted, at which point we send this update to the LoyaltyLion API. This allows us to approve/decline reviews in LoyaltyLion.
 
 ## The Configuration page
 
