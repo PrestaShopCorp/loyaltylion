@@ -55,8 +55,6 @@ class LoyaltyLion extends Module
 		$this->description = $this->l('LoyaltyLion Prestashop module');
 
 		$this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
-
-		/* Logger::addLog(var_export($this, true)); */
 	}
 
 	public function install()
@@ -99,6 +97,10 @@ class LoyaltyLion extends Module
 		return $this->output;
 	}
 
+	/**
+	 * Display (and handle updates of) the settings form, where users can update their token/secret
+	 * and batch import voucher codes
+	 */
 	public function displaySettingsForm()
 	{
 		$token = $this->getToken();
@@ -208,17 +210,32 @@ class LoyaltyLion extends Module
 		$this->output .= $this->display(__FILE__, 'views/templates/admin/settingsForm.tpl');
 	}
 
+	/**
+	 * Display the "signup / marketing" page, where users who are not already using LoyaltyLion
+	 * can create an account (via loyaltylion.com). When a store first installs LoyaltyLion, this
+	 * is the page they'll see
+	 */
 	public function displaySignupForm()
 	{
 		$this->context->smarty->assign(
 			array(
 				'base_uri' => $this->base_uri,
+				'loyaltylion_host' => $this->getLoyaltyLionHost(),
 			)
 		);
 
 		$this->output .= $this->display(__FILE__, 'views/templates/admin/signupForm.tpl');
 	}
 
+	/**
+	 * Fired when the displayHeader is being processed.
+	 *
+	 * We use it to:
+	 * 1) Stick in the JavaScript SDK snippet
+	 * 2) Add a referral cookie if there's a referral ID param in the URL
+	 * 
+	 * @return String HTML including the LoyaltyLion SDK snippet
+	 */
 	public function hookDisplayHeader()
 	{
 		// prestashop appears to run this hook prior to starting output, so it should be safe to
@@ -260,8 +277,6 @@ class LoyaltyLion extends Module
 	 * Fired when a customer account is created
 	 *
 	 * @param  [type] $params [description]
-	 *
-	 * @return [type]         [description]
 	 */
 	public function hookActionCustomerAccountAdd($params)
 	{
@@ -292,8 +307,6 @@ class LoyaltyLion extends Module
 	 * has been created. This only supports the official Prestashop product comments module
 	 *
 	 * @param  [type] $params [description]
-	 *
-	 * @return [type]         [description]
 	 */
 	public function hookActionObjectProductCommentAddAfter($params)
 	{
@@ -339,8 +352,6 @@ class LoyaltyLion extends Module
 	 * in the moderation view
 	 *
 	 * @param  [type] $params [description]
-	 *
-	 * @return [type]         [description]
 	 */
 	public function hookActionLoyaltyLionProductCommentAccepted($params)
 	{
@@ -361,8 +372,6 @@ class LoyaltyLion extends Module
 	 * or deleted (accepted and then deleted)
 	 *
 	 * @param  [type] $params [description]
-	 *
-	 * @return [type]         [description]
 	 */
 	public function hookActionLoyaltyLionProductCommentDeleted($params)
 	{
@@ -382,8 +391,6 @@ class LoyaltyLion extends Module
 	 * Fired when an order is first created and validated
 	 *
 	 * @param  [type] $params [description]
-	 *
-	 * @return [type]         [description]
 	 */
 	public function hookActionValidateOrder($params)
 	{
@@ -430,8 +437,6 @@ class LoyaltyLion extends Module
 	 * Fired when an order's status changes, e.g. becoming paid
 	 *
 	 * @param  [type] $params [description]
-	 *
-	 * @return [type]         [description]
 	 */
 	public function hookActionOrderStatusPostUpdate($params)
 	{
@@ -439,20 +444,23 @@ class LoyaltyLion extends Module
 		$this->sendOrderUpdate($order);
 	}
 
-	/*
-	at the moment this hook is not really used, as we only consider refunds via order/credit slips,
-	which are not even created when this hook fires (we get them with the "actionObjectOrderSlipAddAfter"
-	hook, below) - but we'll register this hook anyway for future proofing, as we might want to support
-	refunds without a credit slip
-	*/
+	/**
+	 * Fired when an order is cancelled
+	 * 
+	 * @param  [type] $params [description]
+	 */
 	public function hookActionProductCancel($params)
 	{
 		$this->sendOrderUpdate($params['order']);
 	}
 
-	/*
-	 this is a more reliable way to discover when credit slips are created, as the standard orderslip
-	 hook does not fire on partial refunds (surprising? no)
+	/**
+	 * Fired after an order slip has been added to an order. This hook is more useful than the
+	 * standard orderslip hook, as that one does not fire on partial refunds (this one will, as it's
+	 * fired when any OrderSlip record is created)
+	 *
+	 * We use this to determine if we need to apply refunds to an order
+	 * @param  [type] $params [description]
 	 */
 	public function hookActionObjectOrderSlipAddAfter($params)
 	{
@@ -463,9 +471,10 @@ class LoyaltyLion extends Module
 	/**
 	 * Given an order, pull out all needed info and send a full update to LoyaltyLion
 	 *
+	 * This is an idempotent operation in that it sends a full copy of the order to the LoyaltyLion
+	 * order update endpoint, so it's safe to call this whenever there is any change to a Prestashop order
+	 * 
 	 * @param  [type] $order [description]
-	 *
-	 * @return [type]        [description]
 	 */
 	private function sendOrderUpdate($order)
 	{
@@ -562,19 +571,34 @@ class LoyaltyLion extends Module
 		}
 	}
 
+	/**
+	 * Determine which "state" we should render for the Configuration page
+	 *
+	 * The two states we have are "signup" and "settings". If a token/secret has been provided, a
+	 * settings update is in process, or the `force_show_settings` param is set, we'll show the "settings" page
+	 *
+	 * @return String 'signup' or 'settings'
+	 */
 	private function getConfigurationAction()
 	{
-		return Tools::isSubmit('gotoSettings')
+		$action = 'signup';
+
+		if (Tools::isSubmit('gotoSettings')
 				|| Tools::isSubmit('submitConfiguration')
 				|| Tools::isSubmit('submitVoucherCodes')
 				|| $this->getToken()
-				|| Tools::getValue('force_show_settings')
-			? 'settings'
-			: 'signup';
+				|| $this->getSecret()
+				|| Tools::getValue('force_show_settings'))
+			$action = 'settings';
+
+		if (Tools::getValue('force_show_signup'))
+			$action = 'signup';
+
+		return $action;
 	}
 
 	/**
-	 * Require the PHP LoyaltyLion library and initialise it
+	 * Load the PHP LoyaltyLion library and initialise it
 	 */
 	private function loadLoyaltyLionClient()
 	{
@@ -589,11 +613,19 @@ class LoyaltyLion extends Module
 		$this->client = new LoyaltyLion_Client($this->getToken(), $this->getSecret(), $options);
 	}
 
+	/**
+	 * Get this store's LoyaltyLion token from the configuration
+	 * @return String LoyaltyLion token
+	 */
 	private function getToken()
 	{
 		return Configuration::get('LOYALTYLION_TOKEN');
 	}
 
+	/**
+	 * Get this store's LoyaltyLion secret from the configuration
+	 * @return String LoyaltyLion secret
+	 */
 	private function getSecret()
 	{
 		return Configuration::get('LOYALTYLION_SECRET');
@@ -638,7 +670,7 @@ class LoyaltyLion extends Module
 	 * configuring the module to work in different environments (e.g. development and staging); if not,
 	 * this will return the default production value
 	 * 
-	 * @return [type] [description]
+	 * @return String LoyaltyLion host, e.g. 'loyaltylion.com'
 	 */
 	private function getLoyaltyLionHost()
 	{
@@ -658,7 +690,7 @@ class LoyaltyLion extends Module
 			// don't include conf parameter, because that is passed in when app is installed
 			// and isn't needed after that. we also don't want any of our own parameters because
 			// we'll use those to navigate between pages (e.g. to force view the settings page)
-			if (!in_array($k, array('conf', 'force_show_settings')))
+			if (!in_array($k, array('conf', 'force_show_settings', 'force_show_signup')))
 				$this->base_uri .= $k.'='.$value.'&';
 
 		$this->base_uri = rtrim($this->base_uri, '&');

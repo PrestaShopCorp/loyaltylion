@@ -35,7 +35,7 @@ class LoyaltyLion_Client
 	private $token;
 	private $secret;
 	private $connection;
-	private $base_uri = 'http://api.loyaltylion.com/v2';
+	private $base_uri = 'https://api.loyaltylion.com/v2';
 
 	public function __construct($token, $secret, $extra = array())
 	{

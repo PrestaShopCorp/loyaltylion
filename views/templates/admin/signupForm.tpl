@@ -32,7 +32,7 @@
     </div>
     <div class='content'>
       <div class='buttons'>
-        <a href='#' class='orange-btn'>{l s='Sign up now' mod='loyaltylion'}</a>
+        <a href='http://{$loyaltylion_host|escape}/prestashop/signup' class='orange-btn' target='_blank'>{l s='Sign up now' mod='loyaltylion'}</a>
         <p class='account-already'>
           <a href='{$base_uri|escape}&amp;force_show_settings=1'>{l s='or click here if you already have a LoyaltyLion account' mod='loyaltylion'}</a>
         </p>
