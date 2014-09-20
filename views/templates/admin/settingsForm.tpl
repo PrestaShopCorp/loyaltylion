@@ -5,25 +5,25 @@
 			<div class='token-secret'>
 				<form action='{$action|escape}' method='post'>
 					<div class='group token'>
-						<div class='label'>Token</div>
+						<div class='label'>{l s='Token' mod='loyaltylion'}</div>
 						<input type='text' name='loyaltylion_token' id='loyaltylion_token' value='{$token|escape}' size='40'>
 					</div>
 					<div class='group secret'>
-						<div class='label'>Secret</div>
+						<div class='label'>{l s='Secret' mod='loyaltylion'}</div>
 						<input type='text' name='loyaltylion_secret' id='loyaltylion_secret' value='{$secret|escape}' size='40'>
 					</div>
 					<div class='submit'>
-						<div class='get-token-secret'><a href='http://{$loyaltylion_host|escape}/prestashop/token-secret' id='get-token-secret-link' target='_blank'>Click here to get your LoyaltyLion token and secret</a></div>
-						<input type='submit' class='orange-btn small-btn' value='Save token &amp; secret' name='submitConfiguration'>
+						<div class='get-token-secret'><a href='http://{$loyaltylion_host|escape}/prestashop/token-secret' id='get-token-secret-link' target='_blank'>{l s='Click here to get your LoyaltyLion token and secret' mod='loyaltylion'}</a></div>
+						<input type='submit' class='orange-btn small-btn' value='{l s='Save token &amp; secret' mod='loyaltylion'}' name='submitConfiguration'>
 					</div>
 				</form>
 				<!-- <br style='clear: left'> -->
 			</div>
 			<div class='import-vouchers'>
-				<div class='import-vouchers-heading'>Import voucher codes</div>
+				<div class='import-vouchers-heading'>{l s='Import voucher codes' mod='loyaltylion'}</div>
 				<form action='{$action|escape}' method='post'>
 					<div class='group'>
-						<div class='label'>Discount amount</div>
+						<div class='label'>{l s='Discount amount' mod='loyaltylion'}</div>
 						<input type='text' name='discount_amount' id='discount_amount' value='{$form_values['discount_amount']|escape}' size='15' onchange="this.value = this.value.replace(/,/g, '.');">
 						<select name="discount_amount_currency">
 							{foreach from=$currencies item='currency'}
@@ -32,11 +32,11 @@
 						</select>
 					</div>
 					<div class='group'>
-						<div class='label'>Codes (one per line)</div>
+						<div class='label'>{l s='Codes (one per line)' mod='loyaltylion'}</div>
 						<textarea name='codes' id='codes' cols='80' rows='8'>{$form_values['codes']|escape}</textarea>
 					</div>
 					<div class='submit'>
-						<input type='submit' class='orange-btn small-btn' value='Import voucher codes' name='submitVoucherCodes'>
+						<input type='submit' class='orange-btn small-btn' value='{l s='Import voucher codes' mod='loyaltylion'}' name='submitVoucherCodes'>
 					</div>
 				</form>
 			</div>
