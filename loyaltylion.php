@@ -101,17 +101,28 @@ class LoyaltyLion extends Module
 
 	public function displaySettingsForm()
 	{
+		$token = $this->getToken();
+		$secret = $this->getSecret();
+
 		if (Tools::isSubmit('submitConfiguration'))
 		{
-			Configuration::updateValue('LOYALTYLION_TOKEN', Tools::getValue('loyaltylion_token'));
-			Configuration::updateValue('LOYALTYLION_SECRET', Tools::getValue('loyaltylion_secret'));
+			$token = Tools::getValue('loyaltylion_token');
+			$secret = Tools::getValue('loyaltylion_secret');
 
-			$this->output .= $this->displayConfirmation($this->l('Configuration saved'));
+			if (empty($token) || empty($secret))
+				$this->output .= $this->displayError($this->l('Token and secret cannot be empty'));
+			else
+			{
+				Configuration::updateValue('LOYALTYLION_TOKEN', $token);
+				Configuration::updateValue('LOYALTYLION_SECRET', $secret);
+
+				$this->output .= $this->displayConfirmation($this->l('Token and secret updated'));
+			}
 		}
 
 		if (Tools::isSubmit('submitVoucherCodes'))
 		{
-			/* we probs need to create some vouchers now... */
+			// we probs need to create some vouchers now...
 
 			$this->form_values['discount_amount'] = Tools::getValue('discount_amount');
 			$this->form_values['discount_amount_currency'] = Tools::getValue('discount_amount_currency');
@@ -124,9 +135,9 @@ class LoyaltyLion extends Module
 			$codes = array_filter(array_unique(preg_split("/\r\n|\n|\r/", $codes_str)), 'strlen');
 
 			if (!$discount_amount)
-				$output .= $this->displayError($this->l('Invalid discount amount'));
+				$this->output .= $this->displayError($this->l('Invalid discount amount'));
 			else if (empty($codes))
-				$output .= $this->displayError($this->l('At least one code is required'));
+				$this->output .= $this->displayError($this->l('At least one code is required'));
 			else
 			{
 				/* reset form values */
@@ -174,10 +185,10 @@ class LoyaltyLion extends Module
 				$created_codes = count($codes) - count($problem_codes);
 
 				if ($created_codes > 0)
-					$output .= $this->displayConfirmation("Created {$created_codes} new voucher codes");
+					$this->output .= $this->displayConfirmation("Created {$created_codes} new voucher codes");
 
 				if (!empty($problem_codes))
-					$output .= $this->displayError(count($problem_codes).' codes could not be created: '.implode(', ', $problem_codes));
+					$this->output .= $this->displayError(count($problem_codes).' codes could not be created: '.implode(', ', $problem_codes));
 
 			}
 		}
@@ -185,8 +196,8 @@ class LoyaltyLion extends Module
 		$this->context->smarty->assign(
 			array(
 				'action' => $this->base_uri,
-				'token' => $this->getToken(),
-				'secret' => $this->getSecret(),
+				'token' => $token,
+				'secret' => $secret,
 				'currencies' => Currency::getCurrencies(),
 				'defaultCurrency' => Configuration::get('PS_CURRENCY_DEFAULT'),
 				'form_values' => $this->form_values,

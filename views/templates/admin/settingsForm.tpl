@@ -13,7 +13,7 @@
 						<input type='text' name='loyaltylion_secret' id='loyaltylion_secret' value='{$secret|escape}' size='40'>
 					</div>
 					<div class='submit'>
-						<div class='get-token-secret'><a href='http://{$loyaltylion_host|escape}/' id='get-token-secret-link'>Click here to get your LoyaltyLion token and secret</a></div>
+						<div class='get-token-secret'><a href='http://{$loyaltylion_host|escape}/prestashop/token-secret' id='get-token-secret-link' target='_blank'>Click here to get your LoyaltyLion token and secret</a></div>
 						<input type='submit' class='orange-btn small-btn' value='Save token &amp; secret' name='submitConfiguration'>
 					</div>
 				</form>
@@ -47,6 +47,13 @@
 	$(document).ready(function() {
 		$('#get-token-secret-link').on('click', function(e) {
 			e.preventDefault();
+
+			var w = 600, h = 500;
+     	var left = (screen.width/2) - (w/2), top = 100;
+     	var options = 'height='+h+',width='+w+',left='+left+',top='+top+',toolbar=0,location=0,menubar=0,directories=0,scrollbars=0';
+     	var url = $(this).attr('href');
+
+     	window.open(url, 'loyaltyLionTokenSecretWindow', options);
 		});
 	});
 </script> 
