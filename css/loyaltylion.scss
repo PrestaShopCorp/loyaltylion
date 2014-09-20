@@ -1,0 +1,152 @@
+$purple1: #6600c2;
+$orange1: darken(#ff960d, 5%);
+
+#loyaltylion-configuration {
+
+  .header {
+    background-color: purple;
+    color: red;
+  }
+
+  .orange-btn {
+    background-color: $orange1;
+    color: #fff;
+    display: inline-block;
+    padding: 12px 18px;
+    border-radius: 3px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    // text-transform: uppercase;
+    // text-shadow: 1px 1px 1px rgba(14, 14, 14, 0.3);
+    font-size: 20px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    &:hover {
+      background-color: lighten($orange1, 8%);
+      color: #fff;
+    }
+    &:active {
+      background-color: lighten($orange1, 5%);
+      box-shadow: inset 0 2px 2px 1px rgba(darken($orange1, 15%), 0.8);
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+  .small-btn {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .heading {
+    background: #3E037C url('../img/logo_white_218w.png') no-repeat 7px 50%;
+    height: 60px;
+  }
+
+  .signup-box {
+    width: 600px;
+    margin: 30px auto;
+    border: 1px solid #ddd;
+
+    .buttons {
+      padding: 100px 0;
+      text-align: center;
+
+      .account-already {
+        margin: 20px 0 0 0;
+      }
+    }
+  }
+
+  .settings-box {
+    width: 650px;
+    margin: 30px auto;
+    border: 1px solid #ddd;
+
+    .token-secret {
+
+      .group {
+        float: left;
+        width: 50%;
+        box-sizing: border-box;
+
+        .label {
+          font-weight: bold;
+          font-size: 16px;
+          margin-bottom: 5px;
+        }
+        input {
+          font-size: 14px;
+          padding: 6px 8px;
+          width: 100%;
+          box-sizing: border-box;
+        }
+
+        $padding: 20px;
+
+        &.token {
+          padding: $padding $padding/2 0 $padding;
+        }
+        &.secret {
+          padding: $padding $padding 0 $padding/2;
+        }
+      }
+
+      .submit {
+        padding: 20px 20px 20px 20px;
+        clear: left;
+        text-align: right;
+
+        .get-token-secret {
+          float: left;
+          margin-top: 13px;
+
+          a {
+            font-size: 14px;
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+
+    .import-vouchers {
+
+      // padding: 20px;
+      padding-bottom: 20px;
+
+      .import-vouchers-heading {
+        font-size: 18px;
+        margin-bottom: 5px;
+        background-color: #f2f2f2;
+        padding: 15px 20px;
+      }
+
+      .group {
+        padding: 20px 20px 0 20px;
+
+        .label {
+          font-weight: bold;
+          font-size: 16px;
+          margin-bottom: 5px;
+        }
+
+        input, textarea {
+          font-size: 14px;
+          padding: 6px 8px;
+          box-sizing: border-box;
+        }
+        textarea {
+          width: 100%;
+        }
+        select {
+          height: 30px;
+        }
+      }
+
+      .submit {
+        padding: 20px 20px 0 20px;
+        text-align: right;
+      }
+    }
+  }
+}

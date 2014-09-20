@@ -1,3 +1,92 @@
 #loyaltylion-configuration .header {
   background-color: purple;
   color: red; }
+#loyaltylion-configuration .orange-btn {
+  background-color: #f38900;
+  color: #fff;
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 20px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  #loyaltylion-configuration .orange-btn:hover {
+    background-color: #ff9d1c;
+    color: #fff; }
+  #loyaltylion-configuration .orange-btn:active {
+    background-color: #ff960d;
+    box-shadow: inset 0 2px 2px 1px rgba(166, 94, 0, 0.8); }
+  #loyaltylion-configuration .orange-btn:focus {
+    outline: none; }
+#loyaltylion-configuration .small-btn {
+  font-size: 16px;
+  padding: 10px; }
+#loyaltylion-configuration .heading {
+  background: #3e037c url("../img/logo_white_218w.png") no-repeat 7px 50%;
+  height: 60px; }
+#loyaltylion-configuration .signup-box {
+  width: 600px;
+  margin: 30px auto;
+  border: 1px solid #ddd; }
+  #loyaltylion-configuration .signup-box .buttons {
+    padding: 100px 0;
+    text-align: center; }
+    #loyaltylion-configuration .signup-box .buttons .account-already {
+      margin: 20px 0 0 0; }
+#loyaltylion-configuration .settings-box {
+  width: 650px;
+  margin: 30px auto;
+  border: 1px solid #ddd; }
+  #loyaltylion-configuration .settings-box .token-secret .group {
+    float: left;
+    width: 50%;
+    box-sizing: border-box; }
+    #loyaltylion-configuration .settings-box .token-secret .group .label {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 5px; }
+    #loyaltylion-configuration .settings-box .token-secret .group input {
+      font-size: 14px;
+      padding: 6px 8px;
+      width: 100%;
+      box-sizing: border-box; }
+    #loyaltylion-configuration .settings-box .token-secret .group.token {
+      padding: 20px 10px 0 20px; }
+    #loyaltylion-configuration .settings-box .token-secret .group.secret {
+      padding: 20px 20px 0 10px; }
+  #loyaltylion-configuration .settings-box .token-secret .submit {
+    padding: 20px 20px 20px 20px;
+    clear: left;
+    text-align: right; }
+    #loyaltylion-configuration .settings-box .token-secret .submit .get-token-secret {
+      float: left;
+      margin-top: 13px; }
+      #loyaltylion-configuration .settings-box .token-secret .submit .get-token-secret a {
+        font-size: 14px;
+        text-decoration: underline; }
+  #loyaltylion-configuration .settings-box .import-vouchers {
+    padding-bottom: 20px; }
+    #loyaltylion-configuration .settings-box .import-vouchers .import-vouchers-heading {
+      font-size: 18px;
+      margin-bottom: 5px;
+      background-color: #f2f2f2;
+      padding: 15px 20px; }
+    #loyaltylion-configuration .settings-box .import-vouchers .group {
+      padding: 20px 20px 0 20px; }
+      #loyaltylion-configuration .settings-box .import-vouchers .group .label {
+        font-weight: bold;
+        font-size: 16px;
+        margin-bottom: 5px; }
+      #loyaltylion-configuration .settings-box .import-vouchers .group input, #loyaltylion-configuration .settings-box .import-vouchers .group textarea {
+        font-size: 14px;
+        padding: 6px 8px;
+        box-sizing: border-box; }
+      #loyaltylion-configuration .settings-box .import-vouchers .group textarea {
+        width: 100%; }
+      #loyaltylion-configuration .settings-box .import-vouchers .group select {
+        height: 30px; }
+    #loyaltylion-configuration .settings-box .import-vouchers .submit {
+      padding: 20px 20px 0 20px;
+      text-align: right; }

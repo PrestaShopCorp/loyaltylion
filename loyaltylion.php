@@ -37,6 +37,8 @@ class LoyaltyLion extends Module
 		'discount_amount_currency' => '',
 		'codes' => '',
 	);
+	private $base_uri;
+	private $output = '';
 
 	public function __construct()
 	{
@@ -69,7 +71,6 @@ class LoyaltyLion extends Module
 			$this->registerHook('actionOrderStatusPostUpdate') &&
 			$this->registerHook('actionValidateOrder') &&
 			$this->registerHook('actionProductCancel') &&
-			/* $this->registerHook('actionOrderSlipAdd') && */
 			$this->registerHook('actionObjectOrderSlipAddAfter') &&
 			$this->registerHook('actionObjectProductCommentAddAfter') &&
 			$this->registerHook('actionLoyaltyLionProductCommentAccepted') &&
@@ -79,14 +80,33 @@ class LoyaltyLion extends Module
 
 	public function getContent()
 	{
-		$output = null;
+		$this->setBaseUri();
 
+		if (isset($this->context->controller))
+			$this->context->controller->addCSS($this->_path.'/css/loyaltylion.css', 'all');
+		else
+			echo '<link rel="stylesheet" type="text/css" href="../modules/loyaltylion-prestashop/css/loyaltylion.css" />';
+
+		switch ($this->getConfigurationAction())
+		{
+			case 'signup':
+				$this->displaySignupForm();
+				break;
+			default:
+				$this->displaySettingsForm();
+		}
+
+		return $this->output;
+	}
+
+	public function displaySettingsForm()
+	{
 		if (Tools::isSubmit('submitConfiguration'))
 		{
 			Configuration::updateValue('LOYALTYLION_TOKEN', Tools::getValue('loyaltylion_token'));
 			Configuration::updateValue('LOYALTYLION_SECRET', Tools::getValue('loyaltylion_secret'));
 
-			$output .= $this->displayConfirmation($this->l('Configuration saved'));
+			$this->output .= $this->displayConfirmation($this->l('Configuration saved'));
 		}
 
 		if (Tools::isSubmit('submitVoucherCodes'))
@@ -162,40 +182,36 @@ class LoyaltyLion extends Module
 			}
 		}
 
-		return $output.$this->displayForm();
-	}
-
-	public function displayForm()
-	{
-		// $default_lang = (int)Configuration::get('PS_LANG_DEFAULT');
-
-		$base_url = 'index.php?';
-		foreach ($_GET as $k => $value)
-			// don't include conf as that is passed in when app is installed and doesn't need to stay :)
-			if (!in_array($k, array('conf'))) $base_url .= $k.'='.$value.'&';
-
-		$base_url = rtrim($base_url, '&');
-
 		$this->context->smarty->assign(
 			array(
-				'action' => Tools::safeOutput($base_url),
+				'action' => $this->base_uri,
 				'token' => $this->getToken(),
 				'secret' => $this->getSecret(),
 				'currencies' => Currency::getCurrencies(),
 				'defaultCurrency' => Configuration::get('PS_CURRENCY_DEFAULT'),
 				'form_values' => $this->form_values,
+				'loyaltylion_host' => $this->getLoyaltyLionHost(),
 			)
 		);
 
-		return $this->display(__FILE__, 'views/templates/admin/form.tpl');
+		$this->output .= $this->display(__FILE__, 'views/templates/admin/settingsForm.tpl');
+	}
+
+	public function displaySignupForm()
+	{
+		$this->context->smarty->assign(
+			array(
+				'base_uri' => $this->base_uri,
+			)
+		);
+
+		$this->output .= $this->display(__FILE__, 'views/templates/admin/signupForm.tpl');
 	}
 
 	public function hookDisplayHeader()
 	{
-		/*
-		* prestashop appears to run this hook prior to starting output, so it should be safe to
-		* set the referral cookie here if we have one !
-		*/
+		// prestashop appears to run this hook prior to starting output, so it should be safe to
+		// set the referral cookie here if we have one !
 		$referral_id = Tools::getValue('ll_ref_id');
 
 		/* if we have an id and we haven't already set a cookie for it (don't override existing ref cookie) */
@@ -535,10 +551,19 @@ class LoyaltyLion extends Module
 		}
 	}
 
+	private function getConfigurationAction()
+	{
+		return Tools::isSubmit('gotoSettings')
+				|| Tools::isSubmit('submitConfiguration')
+				|| Tools::isSubmit('submitVoucherCodes')
+				|| $this->getToken()
+				|| Tools::getValue('force_show_settings')
+			? 'settings'
+			: 'signup';
+	}
+
 	/**
 	 * Require the PHP LoyaltyLion library and initialise it
-	 *
-	 * @return [type] [description]
 	 */
 	private function loadLoyaltyLionClient()
 	{
@@ -563,6 +588,15 @@ class LoyaltyLion extends Module
 		return Configuration::get('LOYALTYLION_SECRET');
 	}
 
+	/**
+	 * Get the URL (domain & path) to the LoyaltyLion JS SDK
+	 *
+	 * If a server environment variable has been set for this, it will be returned, which allows
+	 * configuring the module to work in different environments (e.g. development and staging); if not,
+	 * this will return the default production value
+	 * 
+	 * @return String SDK URL (domain and path)
+	 */
 	private function getSDKUrl()
 	{
 		return isset($_SERVER['LOYALTYLION_SDK_URL'])
@@ -570,10 +604,52 @@ class LoyaltyLion extends Module
 			: 'dg1f2pfrgjxdq.cloudfront.net/libs/ll.sdk-1.1.js';
 	}
 
+	/**
+	 * Get the LoyaltyLion platform host (e.g. `platform.loyaltylion.com`)
+	 *
+	 * If a server environment variable has been set for this, it will be returned, which allows 
+	 * configuring the module to work in different environments (e.g. development and staging); if not,
+	 * this will return the default production value
+	 * 
+	 * @return String LoyaltyLion platform host
+	 */
 	private function getPlatformHost()
 	{
 		return isset($_SERVER['LOYALTYLION_PLATFORM_HOST'])
 			? $_SERVER['LOYALTYLION_PLATFORM_HOST']
 			: 'platform.loyaltylion.com';
+	}
+
+	/**
+	 * Get the main LoyaltyLion host (e.g. `loyaltylion.com`)
+	 *
+	 * If a server environment variable has been set for this, it will be returned, which allows 
+	 * configuring the module to work in different environments (e.g. development and staging); if not,
+	 * this will return the default production value
+	 * 
+	 * @return [type] [description]
+	 */
+	private function getLoyaltyLionHost()
+	{
+		return isset($_SERVER['LOYALTYLION_HOST'])
+			? $_SERVER['LOYALTYLION_HOST']
+			: 'loyaltylion.com';
+	}
+
+	/**
+	 * Set the base URI for this module page
+	 */
+	private function setBaseUri()
+	{
+		$this->base_uri = 'index.php?';
+
+		foreach ($_GET as $k => $value)
+			// don't include conf parameter, because that is passed in when app is installed
+			// and isn't needed after that. we also don't want any of our own parameters because
+			// we'll use those to navigate between pages (e.g. to force view the settings page)
+			if (!in_array($k, array('conf', 'force_show_settings')))
+				$this->base_uri .= $k.'='.$value.'&';
+
+		$this->base_uri = rtrim($this->base_uri, '&');
 	}
 }
