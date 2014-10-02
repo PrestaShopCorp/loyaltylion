@@ -36,7 +36,7 @@
           Quickly create your own social loyalty program. Reward customers for purchases, account creation, visits and referring friends.
         </div>
         <div class='signup-btn'>
-          <a href='http://{$loyaltylion_host|escape}/prestashop/signup' class='orange-btn' target='_blank'>{l s='Sign up now' mod='loyaltylion'}</a>
+          <a href='http://{$loyaltylion_host|escape}/prestashop/signup' class='orange-btn' target='_blank'>{l s='Start free trial' mod='loyaltylion'}</a>
         </div>
         <div class='video'>
           <iframe src='//player.vimeo.com/video/66563344' width='650' height='366' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
@@ -55,15 +55,15 @@
 
         <div class='sub-heading'>Features</div>
         <ul>
-          <li>Reward customer activity: sign ups, visits, referrals, purchases and more</li>
-          <li>Decide how many points to offer for each activity e.g. 5 points per €1</li>
+          <li>Reward visits, signups, referrals and purchases</li>
+          <li>Refer a friend on Facebook, Twitter and via email</li>
           <li>Automatically generate bulk voucher codes</li>
           <li>Name and customise the program to match your store - white label available on higher plans</li>
           <li>Gain insights: most engaged customers, top referrers and true customer value</li>
         </ul>
       </div>
       <div class='buttons'>
-        <a href='http://{$loyaltylion_host|escape}/prestashop/signup' class='orange-btn' target='_blank'>{l s='Sign up now' mod='loyaltylion'}</a>
+        <a href='http://{$loyaltylion_host|escape}/prestashop/signup' class='orange-btn' target='_blank'>{l s='Start free trial' mod='loyaltylion'}</a>
         <p class='account-already'>
           <a href='{$base_uri|escape}&amp;force_show_settings=1'>{l s='or click here if you already have a LoyaltyLion account' mod='loyaltylion'}</a>
         </p>
