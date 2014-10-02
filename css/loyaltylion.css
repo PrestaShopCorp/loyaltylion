@@ -27,11 +27,39 @@
   background: #3e037c url("../img/logo_white_218w.png") no-repeat 7px 50%;
   height: 60px; }
 #loyaltylion-configuration .signup-box {
-  width: 600px;
+  width: 650px;
   margin: 30px auto;
-  border: 1px solid #ddd; }
+  border: 1px solid #ddd;
+  overflow: hidden; }
+  #loyaltylion-configuration .signup-box .intro .intro-text {
+    padding: 30px 0 30px 30px;
+    margin: 0;
+    font-size: 16px;
+    text-align: left;
+    width: 60%;
+    float: left; }
+  #loyaltylion-configuration .signup-box .intro .signup-btn {
+    float: right;
+    padding: 34px 30px 0 0; }
+  #loyaltylion-configuration .signup-box .intro .video {
+    clear: both;
+    box-shadow: 0 0 9px 1px rgba(0, 0, 0, 0.2); }
+  #loyaltylion-configuration .signup-box .more-info {
+    padding: 30px;
+    font-size: 16px; }
+    #loyaltylion-configuration .signup-box .more-info p {
+      margin-bottom: 20px; }
+    #loyaltylion-configuration .signup-box .more-info .sub-heading {
+      font-weight: bold;
+      margin-bottom: 10px; }
+    #loyaltylion-configuration .signup-box .more-info ul {
+      padding-left: 30px;
+      margin-bottom: 20px; }
+    #loyaltylion-configuration .signup-box .more-info li {
+      list-style: circle;
+      margin-bottom: 5px; }
   #loyaltylion-configuration .signup-box .buttons {
-    padding: 100px 0;
+    padding: 20px 0 60px 0;
     text-align: center; }
     #loyaltylion-configuration .signup-box .buttons .account-already {
       margin: 20px 0 0 0; }

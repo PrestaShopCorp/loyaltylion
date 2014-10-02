@@ -31,6 +31,37 @@
 
     </div>
     <div class='content'>
+      <div class='intro'>
+        <div class='intro-text'>
+          Quickly create your own social loyalty program. Reward customers for purchases, account creation, visits and referring friends.
+        </div>
+        <div class='signup-btn'>
+          <a href='http://{$loyaltylion_host|escape}/prestashop/signup' class='orange-btn' target='_blank'>{l s='Sign up now' mod='loyaltylion'}</a>
+        </div>
+        <div class='video'>
+          <iframe src='//player.vimeo.com/video/66563344' width='650' height='366' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class='more-info'>
+        <p>You decide what to reward and how to reward it for example, 100 points for account creation, 5 points per €1 spent and 20 points a visit. Customers collect points and redeem them for vouchers to spend at your store.</p>
+   
+        <p>Increase sales with our customer referral feature.Your customers can quickly refer their friends via Facebook, Twitter and email. LoyaltyLion automatically rewards them each time they bring you a new customer - you decide the reward.</p>
+
+        <div class='sub-heading'>Benefits</div>
+        <ul>
+          <li>Boost beneficial activity, retain loyal customers and gain valuable insights</li>
+          <li>Increase sales via repeat purchase and referrals</li>
+        </ul>
+
+        <div class='sub-heading'>Features</div>
+        <ul>
+          <li>Reward customer activity: sign ups, visits, referrals, purchases and more</li>
+          <li>Decide how many points to offer for each activity e.g. 5 points per €1</li>
+          <li>Automatically generate bulk voucher codes</li>
+          <li>Name and customise the program to match your store - white label available on higher plans</li>
+          <li>Gain insights: most engaged customers, top referrers and true customer value</li>
+        </ul>
+      </div>
       <div class='buttons'>
         <a href='http://{$loyaltylion_host|escape}/prestashop/signup' class='orange-btn' target='_blank'>{l s='Sign up now' mod='loyaltylion'}</a>
         <p class='account-already'>

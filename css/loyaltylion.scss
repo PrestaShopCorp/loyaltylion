@@ -44,12 +44,55 @@ $orange1: darken(#ff960d, 5%);
   }
 
   .signup-box {
-    width: 600px;
+    width: 650px;
     margin: 30px auto;
     border: 1px solid #ddd;
+    overflow: hidden;
+
+    .intro {
+      .intro-text {
+        padding: 30px 0 30px 30px;
+        margin: 0;
+        font-size: 16px;
+        text-align: left;
+        width: 60%;
+        float: left;
+      }
+      .signup-btn {
+        float: right;
+        padding: 34px 30px 0 0;
+      }
+      .video {
+        clear: both;
+        box-shadow: 0 0 9px 1px rgba(0, 0, 0, 0.2);
+      }
+    }
+
+    .more-info {
+      padding: 30px;
+      font-size: 16px;
+
+      p {
+        margin-bottom: 20px;
+      }
+
+      .sub-heading {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      ul {
+        padding-left: 30px;
+        margin-bottom: 20px;
+      }
+      li {
+        list-style: circle;
+        margin-bottom: 5px;
+      }
+    }
 
     .buttons {
-      padding: 100px 0;
+      padding: 20px 0 60px 0;
       text-align: center;
 
       .account-already {
