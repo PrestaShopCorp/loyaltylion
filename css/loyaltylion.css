@@ -29,35 +29,106 @@
 #loyaltylion-configuration .signup-box {
   width: 800px;
   margin: 30px auto;
-  border: 1px solid #ddd;
-  overflow: hidden; }
-  #loyaltylion-configuration .signup-box .intro .intro-text {
-    padding: 30px 0 30px 30px;
-    margin: 0;
-    font-size: 16px;
-    text-align: left;
-    width: 60%;
-    float: left; }
-  #loyaltylion-configuration .signup-box .intro .signup-btn {
-    float: right;
-    padding: 34px 30px 0 0; }
-  #loyaltylion-configuration .signup-box .intro .video {
-    clear: both;
-    box-shadow: 0 0 9px 1px rgba(0, 0, 0, 0.2); }
+  position: relative; }
+  #loyaltylion-configuration .signup-box .content {
+    width: 580px; }
+  #loyaltylion-configuration .signup-box .sidebar {
+    width: 190px;
+    position: absolute;
+    top: 90px;
+    right: 0; }
+    #loyaltylion-configuration .signup-box .sidebar .box {
+      background-color: #f9f9f9;
+      margin-bottom: 30px; }
+    #loyaltylion-configuration .signup-box .sidebar .contact-info {
+      padding: 10px; }
+    #loyaltylion-configuration .signup-box .sidebar .sub-heading {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 15px; }
+    #loyaltylion-configuration .signup-box .sidebar .signup {
+      background-color: transparent; }
+      #loyaltylion-configuration .signup-box .sidebar .signup .orange-btn {
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center; }
+    #loyaltylion-configuration .signup-box .sidebar .screenshots {
+      padding: 10px 10px 10px 10px; }
+      #loyaltylion-configuration .signup-box .sidebar .screenshots .screenshot {
+        width: 170px;
+        height: 128px;
+        display: block;
+        background-repeat: no-repeat;
+        background-position: 0 0;
+        margin-bottom: 15px; }
+        #loyaltylion-configuration .signup-box .sidebar .screenshots .screenshot.mobile {
+          background-image: url("../img/screenshots/thumbs/mobile.jpg"); }
+        #loyaltylion-configuration .signup-box .sidebar .screenshots .screenshot.refer-screen {
+          background-image: url("../img/screenshots/thumbs/refer-screen.jpg"); }
+        #loyaltylion-configuration .signup-box .sidebar .screenshots .screenshot.widget {
+          background-image: url("../img/screenshots/thumbs/widget.jpg"); }
+        #loyaltylion-configuration .signup-box .sidebar .screenshots .screenshot.customise {
+          background-image: url("../img/screenshots/thumbs/customise.jpg"); }
+  #loyaltylion-configuration .signup-box .intro {
+    padding-top: 30px; }
+    #loyaltylion-configuration .signup-box .intro .intro-text {
+      padding: 30px 0 30px 0;
+      margin: 0;
+      font-size: 16px;
+      text-align: left;
+      width: 60%;
+      float: left; }
+    #loyaltylion-configuration .signup-box .intro .signup-btn {
+      float: right;
+      padding: 34px 30px 0 0; }
+    #loyaltylion-configuration .signup-box .intro .video {
+      clear: both; }
   #loyaltylion-configuration .signup-box .more-info {
-    padding: 30px;
+    padding: 30px 0;
     font-size: 16px; }
     #loyaltylion-configuration .signup-box .more-info p {
       margin-bottom: 20px; }
     #loyaltylion-configuration .signup-box .more-info .sub-heading {
-      font-weight: bold;
-      margin-bottom: 10px; }
+      margin-bottom: 20px;
+      font-size: 25px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #eee; }
     #loyaltylion-configuration .signup-box .more-info ul {
       padding-left: 30px;
       margin-bottom: 20px; }
     #loyaltylion-configuration .signup-box .more-info li {
       list-style: circle;
       margin-bottom: 5px; }
+  #loyaltylion-configuration .signup-box .pricing .pricing-box {
+    width: 33.33%;
+    float: left;
+    text-align: center; }
+    #loyaltylion-configuration .signup-box .pricing .pricing-box .plan-name {
+      font-size: 20px;
+      margin-bottom: 10px; }
+    #loyaltylion-configuration .signup-box .pricing .pricing-box .plan-box {
+      padding: 0 10px; }
+    #loyaltylion-configuration .signup-box .pricing .pricing-box .price-box {
+      background-color: #484B5E;
+      color: #fff;
+      padding: 20px 0;
+      border-radius: 6px 6px 0 0; }
+      #loyaltylion-configuration .signup-box .pricing .pricing-box .price-box .price {
+        font-size: 26px;
+        font-weight: 500;
+        margin-bottom: 5px; }
+        #loyaltylion-configuration .signup-box .pricing .pricing-box .price-box .price span {
+          font-size: 16px;
+          font-weight: 400; }
+      #loyaltylion-configuration .signup-box .pricing .pricing-box .price-box .limit {
+        color: #efefef;
+        font-size: 14px; }
+        #loyaltylion-configuration .signup-box .pricing .pricing-box .price-box .limit a {
+          color: inherit;
+          text-decoration: none;
+          border-bottom: 1px dotted #e1e1e1; }
+          #loyaltylion-configuration .signup-box .pricing .pricing-box .price-box .limit a:hover {
+            text-decoration: none; }
   #loyaltylion-configuration .signup-box .buttons {
     padding: 20px 0 60px 0;
     text-align: center; }

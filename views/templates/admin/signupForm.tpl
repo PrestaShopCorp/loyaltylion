@@ -32,20 +32,18 @@
     </div>
     <div class='content'>
       <div class='intro'>
-        <div class='intro-text'>
+        <!-- <div class='intro-text'>
           Quickly create your own social loyalty program. Reward customers for purchases, account creation, visits and referring friends.
-        </div>
-        <div class='signup-btn'>
-          <a href='http://{$loyaltylion_host|escape}/prestashop/signup' class='orange-btn' target='_blank'>{l s='Start free trial' mod='loyaltylion'}</a>
-        </div>
+        </div> -->
         <div class='video'>
-          <iframe src='//player.vimeo.com/video/66563344' width='650' height='366' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+          <iframe src='//player.vimeo.com/video/66563344' width='580' height='326' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
         </div>
       </div>
       <div class='more-info'>
-        <p>You decide what to reward and how to reward it for example, 100 points for account creation, 5 points per €1 spent and 20 points a visit. Customers collect points and redeem them for vouchers to spend at your store.</p>
-   
-        <p>Increase sales with our customer referral feature.Your customers can quickly refer their friends via Facebook, Twitter and email. LoyaltyLion automatically rewards them each time they bring you a new customer - you decide the reward.</p>
+        <div class='sub-heading'>Create your own social loyalty program</div>
+        <p>Show customers they’re valued and increase sales by rewarding referrals, purchases, signups and visits.</p>
+
+        <p>You decide what to reward and how to reward it for example, 100 points for signups, 5 points per £1 spent and 1,000 points per referral. Customers collect points and redeem them for vouchers to spend at your store.</p>
 
         <div class='sub-heading'>Benefits</div>
         <ul>
@@ -61,12 +59,56 @@
           <li>Name and customise the program to match your store - white label available on higher plans</li>
           <li>Gain insights: most engaged customers, top referrers and true customer value</li>
         </ul>
+
+        <div class='sub-heading'>Pricing</div>
+
+        <div class='pricing'>
+          <div class='pricing-box'>
+            <div class='plan-name'>Small</div>
+            <div class='plan-box'>
+              <div class='price-box'>
+                <div class='price'>
+                  <div class='price'>$59<span>/mo</span></div>
+                </div>
+                <div class='limit'>Upto 1k orders</div>
+              </div>
+            </div>
+          </div>
+          <div class='pricing-box'>
+            <div class='plan-name'>Medium</div>
+            <div class='plan-box'>
+              hi
+            </div>
+          </div>
+          <div class='pricing-box'>
+            <div class='plan-name'>Large</div>
+            <div class='plan-box'>
+              hi
+            </div>
+          </div>
+        </div>
       </div>
-      <div class='buttons'>
+      <!-- <div class='buttons'>
         <a href='http://{$loyaltylion_host|escape}/prestashop/signup' class='orange-btn' target='_blank'>{l s='Start free trial' mod='loyaltylion'}</a>
         <p class='account-already'>
           <a href='{$base_uri|escape}&amp;force_show_settings=1'>{l s='or click here if you already have a LoyaltyLion account' mod='loyaltylion'}</a>
         </p>
+      </div> -->
+    </div>
+    <div class='sidebar'>
+      <div class='box signup'>
+        <a href='http://{$loyaltylion_host|escape}/prestashop/signup' class='orange-btn' target='_blank'>{l s='Start free trial' mod='loyaltylion'}</a>
+      </div>
+      <div class='box contact-info'>
+        <div class='sub-heading'>Contact us</div>
+        <p>&rsaquo; <a href='mailto:hello@loyaltylion.com'>hello@loyaltylion.com</a></p>
+      </div>
+      <div class='box screenshots'>
+        <div class='sub-heading'>Screenshots</div>
+        <a class='screenshot mobile' href='../modules/loyaltylion/img/screenshots/mobile.jpg' target='_blank'></a>
+        <a class='screenshot refer-screen' href='../modules/loyaltylion/img/screenshots/refer-screen.jpg' target='_blank'></a>
+        <a class='screenshot widget' href='../modules/loyaltylion/img/screenshots/widget.jpg' target='_blank'></a>
+        <a class='screenshot customise' href='../modules/loyaltylion/img/screenshots/customise.jpg' target='_blank'></a>
       </div>
     </div>
   </div>
