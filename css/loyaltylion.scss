@@ -89,6 +89,7 @@ $orange1: darken(#ff960d, 5%);
 
       .screenshots {
         padding: 10px 10px 10px 10px;
+
         .screenshot {
           width: 170px;
           height: 128px;
@@ -96,6 +97,10 @@ $orange1: darken(#ff960d, 5%);
           background-repeat: no-repeat;
           background-position: 0 0;
           margin-bottom: 15px;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
 
           &.mobile {
             background-image: url('../img/screenshots/thumbs/mobile.jpg');
@@ -109,6 +114,15 @@ $orange1: darken(#ff960d, 5%);
           &.customise {
             background-image: url('../img/screenshots/thumbs/customise.jpg');
           }
+        }
+      }
+
+      .existing-account {
+        padding: 10px;
+
+        a {
+          color: #67B2EC;
+          text-decoration: underline;
         }
       }
     }
@@ -139,6 +153,12 @@ $orange1: darken(#ff960d, 5%);
 
       p {
         margin-bottom: 20px;
+        line-height: 23px;
+
+        a {
+          color: #67B2EC;
+          text-decoration: underline;
+        }
       }
 
       .sub-heading {
@@ -155,11 +175,16 @@ $orange1: darken(#ff960d, 5%);
       }
       li {
         list-style: circle;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
+        line-height: 22px;
       }
     }
 
     .pricing {
+
+      .boxes {
+        // padding-top: 5px;
+      }
 
       .pricing-box {
         width: 33.33%;
@@ -176,10 +201,12 @@ $orange1: darken(#ff960d, 5%);
         }
 
         .price-box {
-          background-color: #484B5E;
+          // background-color: #484B5E;
+          background-color: #777;
           color: #fff;
-          padding: 20px 0;
-          border-radius: 6px 6px 0 0;
+          padding: 15px 0;
+          // border-radius: 6px 6px 0 0;
+          border-radius: 6px;
 
           .price {
             font-size: 26px;
@@ -207,6 +234,21 @@ $orange1: darken(#ff960d, 5%);
             }
           }
         }
+      }
+
+      .enterprise {
+        clear: left;
+        text-align: center;
+        padding: 30px 0;
+      }
+    }
+
+    .signup-btn {
+      text-align: center;
+
+      .orange-btn {
+        padding: 17px 38px;
+        font-size: 26px;
       }
     }
 
