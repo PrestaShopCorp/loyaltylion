@@ -40,73 +40,73 @@
         </div>
       </div>
       <div class='more-info'>
-        <div class='sub-heading'>Create your own social loyalty program</div>
-        <p>Show customers they’re valued and increase sales by rewarding referrals, purchases, signups, reviews and visits.</p>
+        <div class='sub-heading'>{l s='Create your own social loyalty program' mod='loyaltylion'}</div>
+        <p>{l s='Show customers they’re valued and increase sales by rewarding referrals, purchases, signups, reviews and visits.' mod='loyaltylion'}</p>
 
-        <p>You decide what to reward and how to reward it for example, 100 points for signups, 5 points per $1 spent and 1000 points per referral. Customers collect points and redeem them for vouchers to spend at your store.</p>
+        <p>{l s='You decide what to reward and how to reward it for example, 100 points for signups, 5 points per $1 spent and 1000 points per referral. Customers collect points and redeem them for vouchers to spend at your store.' mod='loyaltylion'}</p>
 
-        <div class='sub-heading'>Benefits</div>
+        <div class='sub-heading'>{l s='Benefits' mod='loyaltylion'}</div>
         <ul>
-          <li>Increase sales via repeat purchases</li>
-          <li>Acquire new customers using our refer a friend feature. Reward referrals via Facebook, Twitter and email</li>
-          <li>Differentiate your store from your competitors</li>
-          <li>Case Study: Beef&amp;Steak gains 2,114 new visitors worth $1,412 using LoyaltyLion. <a href='http://resources.loyaltylion.com/case-studies/2014-08-05/beefensteak-en.pdf' target='_blank'>Read more</a></li>
+          <li>{l s='Increase sales via repeat purchases' mod='loyaltylion'}</li>
+          <li>{l s='Acquire new customers using our refer a friend feature. Reward referrals via Facebook, Twitter and email' mod='loyaltylion'}</li>
+          <li>{l s='Differentiate your store from your competitors' mod='loyaltylion'}</li>
+          <li>{l s='Case Study: Beef&amp;Steak gains 2,114 new visitors worth $1,412 using LoyaltyLion.' mod='loyaltylion'} <a href='http://resources.loyaltylion.com/case-studies/2014-08-05/beefensteak-en.pdf' target='_blank'>{l s='Read more' mod='loyaltylion'}</a></li>
         </ul>
 
-        <div class='sub-heading'>Features</div>
+        <div class='sub-heading'>{l s='Features' mod='loyaltylion'}</div>
         <ul>
-          <li>Import existing customers and their points</li>
-          <li>Reward visits, signups, referrals, reviews and purchases</li>
-          <li>Refer a friend on Facebook, Twitter and via email</li>
-          <li>Automatically generate bulk voucher codes</li>
-          <li>Name and customise the program to match your store</li>
-          <li>White label available on <em>Medium</em> or higher plans</li>
-          <li>Gain customer insights: most engaged customers and top referrers</li>
-          <li>Mobile friendly</li>
+          <li>{l s='Import existing customers and their points' mod='loyaltylion'}</li>
+          <li>{l s='Reward visits, signups, referrals, reviews and purchases' mod='loyaltylion'}</li>
+          <li>{l s='Refer a friend on Facebook, Twitter and via email' mod='loyaltylion'}</li>
+          <li>{l s='Automatically generate bulk voucher codes' mod='loyaltylion'}</li>
+          <li>{l s='Name and customise the program to match your store' mod='loyaltylion'}</li>
+          <li>{l s='White label available on <em>Medium</em> or higher plans' mod='loyaltylion'}</li>
+          <li>{l s='Gain customer insights: most engaged customers and top referrers' mod='loyaltylion'}</li>
+          <li>{l s='Mobile friendly' mod='loyaltylion'}</li>
         </ul>
 
-        <div class='sub-heading'>Pricing</div>
+        <div class='sub-heading'>{l s='Pricing' mod='loyaltylion'}</div>
 
-        <p>We'll let you know which plan you'll be on before your free trial ends. You can change plans whenever you like, and cancel any time.</p>
+        <p>{l s="We'll let you know which plan you'll be on before your free trial ends. You can change plans whenever you like, and cancel any time." mod='loyaltylion'}</p>
 
         <div class='pricing'>
           <div class='boxes'>
             <div class='pricing-box'>
-              <div class='plan-name'>Small</div>
+              <div class='plan-name'>{l s='Small' mod='loyaltylion'}</div>
               <div class='plan-box'>
                 <div class='price-box'>
                   <div class='price'>
                     <div class='price'>$59<span>/mo</span></div>
                   </div>
-                  <div class='limit'>up to 250 orders</div>
+                  <div class='limit'>{l s='up to 250 orders' mod='loyaltylion'}</div>
                 </div>
               </div>
             </div>
             <div class='pricing-box'>
-              <div class='plan-name'>Medium</div>
+              <div class='plan-name'>{l s='Medium' mod='loyaltylion'}</div>
               <div class='plan-box'>
                 <div class='price-box'>
                   <div class='price'>
                     <div class='price'>$159<span>/mo</span></div>
                   </div>
-                  <div class='limit'>up to 750 orders</div>
+                  <div class='limit'>{l s='up to 750 orders' mod='loyaltylion'}</div>
                 </div>
               </div>
             </div>
             <div class='pricing-box'>
-              <div class='plan-name'>Large</div>
+              <div class='plan-name'>{l s='Large' mod='loyaltylion'}</div>
               <div class='plan-box'>
                 <div class='price-box'>
                   <div class='price'>
                     <div class='price'>$399<span>/mo</span></div>
                   </div>
-                  <div class='limit'>up to 2000 orders</div>
+                  <div class='limit'>{l s='up to 2000 orders' mod='loyaltylion'}</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <p class='enterprise'>More than 2000 orders a month? <a href='mailto:hello@loyaltylion.com'>Contact us</a></p>
+          <p class='enterprise'>{l s='More than 2000 orders a month?' mod='loyaltylion'} <a href='mailto:hello@loyaltylion.com'>{l s='Contact us' mod='loyaltylion'}</a></p>
         </div>
 
         <div class='signup-btn'>
@@ -126,18 +126,18 @@
         <a href='http://{$loyaltylion_host|escape}/prestashop/signup' class='orange-btn' target='_blank'>{l s='Start free trial' mod='loyaltylion'}</a>
       </div>
       <div class='box contact-info'>
-        <div class='sub-heading'>Contact us</div>
+        <div class='sub-heading'>{l s='Contact us' mod='loyaltylion'}</div>
         <p>&rsaquo; <a href='mailto:hello@loyaltylion.com'>hello@loyaltylion.com</a></p>
       </div>
       <div class='box screenshots'>
-        <div class='sub-heading'>Screenshots</div>
+        <div class='sub-heading'>{l s='Screenshots' mod='loyaltylion'}</div>
         <a class='screenshot mobile' href='../modules/loyaltylion/img/screenshots/mobile.jpg' target='_blank'></a>
         <a class='screenshot refer-screen' href='../modules/loyaltylion/img/screenshots/refer-screen.jpg' target='_blank'></a>
         <a class='screenshot widget' href='../modules/loyaltylion/img/screenshots/widget.jpg' target='_blank'></a>
         <a class='screenshot customise' href='../modules/loyaltylion/img/screenshots/customise.jpg' target='_blank'></a>
       </div>
       <div class='box existing-account'>
-        Already have a LoyaltyLion account? <a href='{$base_uri|escape}&amp;force_show_settings=1'>Click here</a>
+        {l s='Already have a LoyaltyLion account?' mod='loyaltylion'} <a href='{$base_uri|escape}&amp;force_show_settings=1'>{l s='Click here' mod='loyaltylion'}</a>
       </div>
     </div>
   </div>
