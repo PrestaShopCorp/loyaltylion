@@ -75,8 +75,6 @@ class LoyaltyLion extends Module
 			$this->registerHook('actionObjectProductCommentAddAfter') &&
 			$this->registerHook('actionObjectProductCommentDeleteAfter') &&
 			$this->registerHook('actionObjectProductCommentValidateAfter') &&
-			$this->registerHook('actionLoyaltyLionProductCommentAccepted') &&
-			$this->registerHook('actionLoyaltyLionProductCommentDeleted') &&
 			$this->registerHook('actionCustomerAccountAdd');
 	}
 
