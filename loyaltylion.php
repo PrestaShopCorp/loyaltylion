@@ -59,9 +59,11 @@ class LoyaltyLion extends Module
 
 	public function install()
 	{
-		if (!function_exists('curl_init'))
+		if (!function_exists('curl_init')) {
 			$this->setError($this->l('LoyaltyLion needs the PHP Curl extension. Please ask your hosting ' +
 				'provider to enable it before installing LoyaltyLion.'));
+			return false;
+		}
 
 		return parent::install() &&
 			$this->registerHook('displayHeader') &&
@@ -71,8 +73,8 @@ class LoyaltyLion extends Module
 			$this->registerHook('actionProductCancel') &&
 			$this->registerHook('actionObjectOrderSlipAddAfter') &&
 			$this->registerHook('actionObjectProductCommentAddAfter') &&
-			$this->registerHook('actionLoyaltyLionProductCommentAccepted') &&
-			$this->registerHook('actionLoyaltyLionProductCommentDeleted') &&
+			$this->registerHook('actionObjectProductCommentDeleteAfter') &&
+			$this->registerHook('actionObjectProductCommentValidateAfter') &&
 			$this->registerHook('actionCustomerAccountAdd');
 	}
 
@@ -332,10 +334,8 @@ class LoyaltyLion extends Module
 
 		if (Configuration::get('PRODUCT_COMMENTS_MODERATE') !== '1')
 		{
-			/*
-			reviews do not require moderation, which means this one will be shown immediately and we should
-			send an update now to approve it
-     	*/
+			// reviews do not require moderation, which means this one will be shown immediately and we should
+			// send an update now to approve it right now
 
 			$response = $this->client->activities->update('review', $comment->id, array('state' => 'approved'));
 
@@ -348,17 +348,21 @@ class LoyaltyLion extends Module
 	}
 
 	/**
-	 * This is fired by our AdminModulesContrller override when a comment has been accepted
-	 * in the moderation view
-	 *
+	 * Hook into `ProductComment` deletes, which lets us track when a product comment has been
+	 * deleted and tell the LoyaltyLion API so any points for that review can be removed. This
+	 * only supports the official Prestashop product comments module
+	 * 
 	 * @param  [type] $params [description]
+	 * @return [type]         [description]
 	 */
-	public function hookActionLoyaltyLionProductCommentAccepted($params)
+	public function hookActionObjectProductCommentDeleteAfter($params)
 	{
-		if (!$params['id']) return;
+		$object = $params['object'];
+
+		if (!$object) return;
 
 		$this->loadLoyaltyLionClient();
-		$response = $this->client->activities->update('review', $params['id'], array('state' => 'approved'));
+		$response = $this->client->activities->update('review', $object->id, array('state' => 'declined'));
 
 		if (!$response->success)
 		{
@@ -368,17 +372,21 @@ class LoyaltyLion extends Module
 	}
 
 	/**
-	 * Fired by our AdminModulesController override when a comment has been rejected (i.e. not accepted)
-	 * or deleted (accepted and then deleted)
-	 *
+	 * Hook into `ProductComment` validations, which lets us track when a product comment has been
+	 * moderated and tell the LoyaltyLion API so any points for that review can be approved. This
+	 * only supports the official Prestashop product comments module
+	 * 
 	 * @param  [type] $params [description]
+	 * @return [type]         [description]
 	 */
-	public function hookActionLoyaltyLionProductCommentDeleted($params)
+	public function hookActionObjectProductCommentValidateAfter($params)
 	{
-		if (!$params['id']) return;
+		$object = $params['object'];
+
+		if (!$object) return;
 
 		$this->loadLoyaltyLionClient();
-		$response = $this->client->activities->update('review', $params['id'], array('state' => 'declined'));
+		$response = $this->client->activities->update('review', $object->id, array('state' => 'approved'));
 
 		if (!$response->success)
 		{
