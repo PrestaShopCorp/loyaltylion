@@ -59,9 +59,11 @@ class LoyaltyLion extends Module
 
 	public function install()
 	{
-		if (!function_exists('curl_init'))
+		if (!function_exists('curl_init')) {
 			$this->setError($this->l('LoyaltyLion needs the PHP Curl extension. Please ask your hosting ' +
 				'provider to enable it before installing LoyaltyLion.'));
+			return false;
+		}
 
 		return parent::install() &&
 			$this->registerHook('displayHeader') &&
