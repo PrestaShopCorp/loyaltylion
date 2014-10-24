@@ -12,10 +12,6 @@ This is a bundled version of our PHP client library used for communication with 
 
 It uses cURL to make HTTPs requests to `api.loyaltylion.com`
 
-### override/controllers/admin/AdminModulesController.php
-
-We override the method `AdminModulesController::postProcess` so that we can add hooks for the `productcomments` module. The custom hooks this adds are `actionLoyaltyLionProductCommentAccepted` and `actionLoyaltyLionProductCommentDeleted`. This allows LoyaltyLion to reward the posting of reviews (comments) on products.
-
 ## Global hooks used by this module
 
 ### displayHeader
@@ -38,13 +34,9 @@ For all "order update" type hooks, we send a full, idempotent copy of the order 
 
 We use this hook to send a "sign up" event to the LoyaltyLion API when a customer signs up. If they have a referral cookie, we'll send this too so we know that this new customer was referred.
 
-### hookActionObjectProductCommentAddAfter
+### hookActionObjectProductCommentAddAfter, hookActionObjectProductCommentDeleteAfter, hookActionObjectProductCommentValidateAfter
 
-We use this hook to be notified when a new Product Comment (i.e. review) has been added, and track this as an event to the LoyaltyLion API.
-
-### hookActionLoyaltyLionProductCommentAccepted, hookActionLoyaltyLionProductCommentDeleted
-
-These two custom hooks are added by our `AdminModulesController::postProcess` override and allow us to be notified when a comment is approved or deleted, at which point we send this update to the LoyaltyLion API. This allows us to approve/decline reviews in LoyaltyLion.
+We use these to hook into the lifecycle of `ProductComments` (part of the `productcomments` module), so we can be notified when reviews are posted, deleted and validated by a moderator.
 
 ## The Configuration page
 
