@@ -47,7 +47,6 @@ class LoyaltyLion extends Module
 		$this->version = '1.0';
 		$this->author = 'LoyaltyLion';
 		$this->need_instance = 0;
-		$this->ps_versions_compliancy = array('min' => '1.5', 'max' => '1.6');
 
 		parent::__construct();
 
