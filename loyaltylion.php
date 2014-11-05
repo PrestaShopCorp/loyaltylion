@@ -44,7 +44,7 @@ class LoyaltyLion extends Module
 	{
 		$this->name = 'loyaltylion';
 		$this->tab = 'pricing_promotion';
-		$this->version = '1.0';
+		$this->version = '1.1';
 		$this->author = 'LoyaltyLion';
 		$this->need_instance = 0;
 
@@ -301,6 +301,7 @@ class LoyaltyLion extends Module
 			Logger::addLog('[LoyaltyLion] Failed to track signup activity. API status: '
 				.$response->status.', error: '.$response->error, 3);
 		}
+		else Configuration::updateValue ('LOYALTYLION_CONFIGURATION_OK', true);
 	}
 
 	/**
