@@ -53,6 +53,11 @@ class LoyaltyLion_Connection
 		return $this->request('PUT', $path, $data);
 	}
 
+	public function get($path, $data = array())
+	{
+		return $this->request('GET', $path, $data);
+	}
+
 	private function request($method, $path, $data)
 	{
 

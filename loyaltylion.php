@@ -29,6 +29,8 @@
 
 if (!defined('_PS_VERSION_')) exit;
 
+require(dirname(__FILE__).'/lib/loyaltylion-client/lib/connection.php');
+
 class LoyaltyLion extends Module
 {
 
@@ -91,11 +93,57 @@ class LoyaltyLion extends Module
 			case 'signup':
 				$this->displaySignupForm();
 				break;
+			case 'set_token_secret':
+				$this->setTokenAndSecret();
+				break;
+			case 'add_voucher_codes':
+				$this->addVoucherCodes();
+				break;
 			default:
 				$this->displaySettingsForm();
 		}
 
 		return $this->output;
+	}
+
+	/**
+	 * Sets LoyaltyLion token and secret.
+	 */
+	public function setTokenAndSecret() {
+		$token = Tools::getValue('loyaltylion_token');
+		$secret = Tools::getValue('loyaltylion_secret');
+
+		if(!$token || !$secret)
+			return $this->displaySignupForm();
+
+		Configuration::updateValue('LOYALTYLION_TOKEN', $token);
+		Configuration::updateValue('LOYALTYLION_SECRET', $secret);
+
+		$this->output .= $this->displayConfirmation($this->l('Your LoyaltyLion token and secret is updated. Please close this window.'));
+	}
+
+	/**
+	 * Pulls voucher codes and rewards from LoyaltyLion merchant account and
+	 * adds them to Prestashop site.
+	 */
+	public function addVoucherCodes() {
+		$rewards_with_voucher_codes = $this->getRewardsWithVoucherCodes();
+
+		$success = 0;
+
+		foreach ($rewards_with_voucher_codes as $reward) {
+
+			foreach($reward->vouchers as $voucher) {
+				$result = $this->createRule($voucher, $reward->cost, $this->getCurrencyId($reward->cost_currency));
+
+				if ($result)
+					$success++;
+
+			}
+
+		}
+
+		$this->output .= $this->displayConfirmation($this->l("${success} codes are imported successfuly."));
 	}
 
 	/**
@@ -152,36 +200,9 @@ class LoyaltyLion extends Module
 
 				foreach ($codes as $code)
 				{
+					$result = $this->createRule($code, $discount_amount, $discount_amount_currency);
 
-					/* check if already exists, don't add it again, even though prestashop will let you (come on!) */
-					$existing_codes = CartRule::getCartsRuleByCode($code, (int)$this->context->language->id);
-
-					if (!empty($existing_codes))
-					{
-						$problem_codes[] = $code;
-						continue;
-					}
-
-					$rule = new CartRule();
-
-					$rule->code = $code;
-					$rule->description = $this->l('Generated LoyaltyLion voucher');
-					$rule->quantity = 1;
-					$rule->quantity_per_user = 1;
-
-					$now = time();
-					$rule->date_from = date('Y-m-d H:i:s', $now);
-					$rule->date_to = date('Y-m-d H:i:s', $now + (3600 * 24 * 365 * 10)); /* 10 years */
-					$rule->active = 1;
-
-					$rule->reduction_amount = $discount_amount;
-					$rule->reduction_tax = true;
-					$rule->reduction_currency = $discount_amount_currency;
-
-					foreach (Language::getLanguages() as $language)
-						$rule->name[$language['id_lang']] = $code;
-
-					if (!$rule->add())
+					if (!$result)
 						$problem_codes[] = $code;
 				}
 
@@ -602,6 +623,12 @@ class LoyaltyLion extends Module
 		if (Tools::getValue('force_show_signup'))
 			$action = 'signup';
 
+		if (Tools::getValue('set_token_secret'))
+			$action = 'set_token_secret';
+
+		if (Tools::getValue('add_voucher_codes'))
+			$action = 'add_voucher_codes';
+
 		return $action;
 	}
 
@@ -703,4 +730,74 @@ class LoyaltyLion extends Module
 
 		$this->base_uri = rtrim($this->base_uri, '&');
 	}
+
+	/**
+	 * Gets rewards from Merchant account. Uses LoyaltyLion PHP SDK with different
+	 * base url.
+	 */
+	private function getRewardsWithVoucherCodes() {
+		$base_uri = 'http://loyaltylion.dev/prestashop';
+		$connection = new LoyaltyLion_Connection($this->getToken(), $this->getSecret(), $base_uri);
+
+		$response = $connection->get('/rewards_with_voucher_codes');
+		if (isset($response->error)) return;
+
+		$rewards = json_decode($response->body);
+		return $rewards;
+	}
+
+	/**
+	 * Checks if code is added (because Prestashop lets you add existing code again!) 
+	 * If it's not added, creates a rule and returns the result of add operation.
+	 * 
+	 * @param  [type] $code                     [description]
+	 * @param  [type] $discount_amount          [description]
+	 * @param  [type] $discount_amount_currency [description]
+	 * @return [type]                           [description]
+	 */
+	private function createRule($code, $discount_amount, $discount_amount_currency) {
+		$existing_codes = CartRule::getCartsRuleByCode($code, (int)$this->context->language->id);
+
+		if (!empty($existing_codes))
+			return false;
+
+		$rule = new CartRule();
+
+		$rule->code = $code;
+		$rule->description = $this->l('Generated LoyaltyLion voucher');
+		$rule->quantity = 1;
+		$rule->quantity_per_user = 1;
+
+		$now = time();
+		$rule->date_from = date('Y-m-d H:i:s', $now);
+		$rule->date_to = date('Y-m-d H:i:s', $now + (3600 * 24 * 365 * 10)); /* 10 years */
+		$rule->active = 1;
+
+		$rule->reduction_amount = $discount_amount;
+		$rule->reduction_tax = true;
+		$rule->reduction_currency = $discount_amount_currency;
+
+		foreach (Language::getLanguages() as $language)
+			$rule->name[$language['id_lang']] = $code;
+
+		return $rule->add();
+	}
+
+	/**
+	 * Iterates over all currencies, if iso code of currency
+	 * is same with currency code we look for, returs the id of it.
+	 * 
+	 * @param  [type] $code [description]
+	 * @return [type]       [description]
+	 */
+	private function getCurrencyId($code) {
+		$currencies = Currency::getCurrencies();
+
+		foreach ($currencies as $currency) {
+			if(strtolower($currency['iso_code']) == strtolower($code))
+				return $currency['id_currency'];
+		}
+
+	}
+
 }
