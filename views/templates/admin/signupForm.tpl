@@ -110,7 +110,7 @@
         </div>
 
         <div class='signup-btn'>
-          <a href='http://{$loyaltylion_host|escape}/prestashop/signup' class='orange-btn' target='_blank'>{l s='Start free trial' mod='loyaltylion'}</a>
+          <a href='http://{$loyaltylion_host|escape}/signup/prestashop?shop_details={$shop_details}' class='orange-btn' target='_blank'>{l s='Start free trial' mod='loyaltylion'}</a>
         </div>
         
       </div>
@@ -123,7 +123,7 @@
     </div>
     <div class='sidebar'>
       <div class='box signup'>
-        <a href='http://{$loyaltylion_host|escape}/prestashop/signup' class='orange-btn' target='_blank'>{l s='Start free trial' mod='loyaltylion'}</a>
+        <a href='http://{$loyaltylion_host|escape}/signup/prestashop?shop_details={$shop_details}' class='orange-btn' target='_blank'>{l s='Start free trial' mod='loyaltylion'}</a>
       </div>
       <div class='box contact-info'>
         <div class='sub-heading'>{l s='Contact us' mod='loyaltylion'}</div>

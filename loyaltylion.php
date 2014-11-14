@@ -119,6 +119,9 @@ class LoyaltyLion extends Module
 		Configuration::updateValue('LOYALTYLION_TOKEN', $token);
 		Configuration::updateValue('LOYALTYLION_SECRET', $secret);
 
+		// Let LoyaltyLion know about this operation
+		$this->updateTokenAndSecretSet();
+
 		$this->output .= $this->displayConfirmation($this->l('Your LoyaltyLion token and secret is updated. Please close this window.'));
 	}
 
@@ -239,10 +242,17 @@ class LoyaltyLion extends Module
 	 */
 	public function displaySignupForm()
 	{
+		$shop_details = json_encode(array(
+			'shop_name' => Configuration::get('PS_SHOP_NAME'),
+			'shop_domain' => Configuration::get('PS_SHOP_DOMAIN'),
+			'base_uri' => $_SERVER['REQUEST_URI'] 
+		));
+
 		$this->context->smarty->assign(
 			array(
 				'base_uri' => $this->base_uri,
 				'loyaltylion_host' => $this->getLoyaltyLionHost(),
+				'shop_details' => base64_encode($shop_details)
 			)
 		);
 
@@ -736,10 +746,26 @@ class LoyaltyLion extends Module
 	 * base url.
 	 */
 	private function getRewardsWithVoucherCodes() {
-		$base_uri = 'http://loyaltylion.dev/prestashop';
+		$base_uri = 'http://'.$this->getLoyaltyLionHost().'/prestashop';
 		$connection = new LoyaltyLion_Connection($this->getToken(), $this->getSecret(), $base_uri);
 
 		$response = $connection->get('/rewards_with_voucher_codes');
+		if (isset($response->error)) return;
+
+		$rewards = json_decode($response->body);
+		return $rewards;
+	}
+
+	/**
+	 * Sets token_and_secret_set value to true in site's metadata on LoyaltyLion.
+	 * 
+	 * @return [type] [description]
+	 */
+	private function updateTokenAndSecretSet() {
+		$base_uri = 'http://'.$this->getLoyaltyLionHost().'/prestashop';
+		$connection = new LoyaltyLion_Connection($this->getToken(), $this->getSecret(), $base_uri);
+
+		$response = $connection->post('/update_token_and_secret_set');
 		if (isset($response->error)) return;
 
 		$rewards = json_decode($response->body);

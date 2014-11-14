@@ -83,10 +83,9 @@ class LoyaltyLion_Connection
 				);
 		}
 
-		if (!empty($data))
+		if ($method == 'POST')
 		{
 			$body = json_encode($data);
-
 			$options += array(
 				CURLOPT_POSTFIELDS => $body,
 				CURLOPT_HTTPHEADER => array(
