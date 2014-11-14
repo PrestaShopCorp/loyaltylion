@@ -120,7 +120,7 @@ class LoyaltyLion extends Module
 		Configuration::updateValue('LOYALTYLION_SECRET', $secret);
 
 		// Let LoyaltyLion know about this operation
-		$this->updateTokenAndSecretSet();
+		$this->updateSiteMetadata(array('token_and_secret_set' => true));
 
 		$this->output .= $this->displayConfirmation($this->l('Your LoyaltyLion token and secret is updated. Please close this window.'));
 	}
@@ -144,6 +144,10 @@ class LoyaltyLion extends Module
 
 			}
 
+		}
+
+		if($success > 0) {
+			$this->updateSiteMetadata(array('vouchers_added' => true));
 		}
 
 		$this->output .= $this->displayConfirmation($this->l("${success} codes are imported successfuly."));
@@ -757,15 +761,15 @@ class LoyaltyLion extends Module
 	}
 
 	/**
-	 * Sets token_and_secret_set value to true in site's metadata on LoyaltyLion.
+	 * Updates metadata information of site on LoyaltLion.
 	 * 
 	 * @return [type] [description]
 	 */
-	private function updateTokenAndSecretSet() {
+	private function updateSiteMetadata($data) {
 		$base_uri = 'http://'.$this->getLoyaltyLionHost().'/prestashop';
 		$connection = new LoyaltyLion_Connection($this->getToken(), $this->getSecret(), $base_uri);
-
-		$response = $connection->post('/update_token_and_secret_set');
+		$response = $connection->post('/metadata', array('metadata' => $data));
+		
 		if (isset($response->error)) return;
 
 		$rewards = json_decode($response->body);
