@@ -150,7 +150,7 @@ class LoyaltyLion extends Module
 			$this->updateSiteMetadata(array('vouchers_added' => true));
 		}
 
-		$this->output .= $this->displayConfirmation($this->l("${success} codes are imported successfuly."));
+		$this->output .= $this->displayConfirmation($this->l("${success} codes are imported successfuly. Please close this window."));
 	}
 
 	/**
