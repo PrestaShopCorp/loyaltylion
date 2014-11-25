@@ -317,19 +317,19 @@ class LoyaltyLion extends Module
 	public function hookActionCustomerAccountAdd($params)
 	{
 		$customer = $params['newCustomer'];
-
 		$data = array(
 			'customer_id' => $customer->id,
 			'customer_email' => $customer->email,
 			'date' => date('c'),
 		);
-
+	
 		if ($this->context->cookie->loyaltylion_referral_id)
 			$data['referral_id'] = $this->context->cookie->loyaltylion_referral_id;
 
 		$this->loadLoyaltyLionClient();
 
 		$response = $this->client->activities->track('signup', $data);
+
 
 		if (!$response->success)
 		{
@@ -658,6 +658,7 @@ class LoyaltyLion extends Module
 
 		if (isset($_SERVER['LOYALTYLION_API_BASE']))
 			$options['base_uri'] = $_SERVER['LOYALTYLION_API_BASE'];
+
 
 		$this->client = new LoyaltyLion_Client($this->getToken(), $this->getSecret(), $options);
 	}
