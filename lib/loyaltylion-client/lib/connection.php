@@ -85,7 +85,7 @@ if (!class_exists('LoyaltyLion_Connection')) {
 					);
 			}
 
-			if ($method == 'POST')
+			if ($method == 'POST' || $method == 'PUT')
 			{
 				$body = json_encode($data);
 				$options += array(
