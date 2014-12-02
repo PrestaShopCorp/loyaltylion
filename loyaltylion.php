@@ -76,7 +76,8 @@ class LoyaltyLion extends Module
 			$this->registerHook('actionObjectProductCommentAddAfter') &&
 			$this->registerHook('actionObjectProductCommentDeleteAfter') &&
 			$this->registerHook('actionObjectProductCommentValidateAfter') &&
-			$this->registerHook('actionCustomerAccountAdd');
+			$this->registerHook('actionCustomerAccountAdd') &&
+			$this->registerHook('displayCustomerAccount');
 	}
 
 	public function getContent()
@@ -307,6 +308,15 @@ class LoyaltyLion extends Module
 		$html = $this->display(__FILE__, 'sdk_init.tpl');
 
 		return $html;
+	}
+
+	/**
+	 * [hookDisplayCustomerAccount description]
+	 * @return [type] [description]
+	 */
+	public function hookDisplayCustomerAccount() {
+		$html = $this->display(__FILE__, 'my_account_button.tpl');
+		return $html;	
 	}
 
 	/**

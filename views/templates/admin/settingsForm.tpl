@@ -41,7 +41,7 @@
 					</div>
 					<div class='submit'>
 						<div class='get-token-secret'><a href='http://{$loyaltylion_host|escape}/prestashop/token-secret' id='get-token-secret-link' target='_blank'>{l s='Click here to get your LoyaltyLion token and secret' mod='loyaltylion'}</a></div>
-						<input type='submit' class='orange-btn small-btn' value='{l s='Save token &amp; secret' mod='loyaltylion'}' name='submitConfiguration'>
+						<input type='submit' class='orange-btn small-btn' value='{l s='Save token & secret' mod='loyaltylion'}' name='submitConfiguration'>
 					</div>
 				</form>
 				<!-- <br style='clear: left'> -->
