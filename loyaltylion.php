@@ -311,7 +311,10 @@ class LoyaltyLion extends Module
 	}
 
 	/**
-	 * [hookDisplayCustomerAccount description]
+	 * Fired when customer opens my account page.
+	 *
+	 * We use this hook to add Loyalty program button to My Account page.
+	 * 
 	 * @return [type] [description]
 	 */
 	public function hookDisplayCustomerAccount() {
