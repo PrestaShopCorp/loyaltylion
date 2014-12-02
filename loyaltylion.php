@@ -76,8 +76,7 @@ class LoyaltyLion extends Module
 			$this->registerHook('actionObjectProductCommentAddAfter') &&
 			$this->registerHook('actionObjectProductCommentDeleteAfter') &&
 			$this->registerHook('actionObjectProductCommentValidateAfter') &&
-			$this->registerHook('actionCustomerAccountAdd') &&
-			$this->registerHook('displayCustomerAccount');
+			$this->registerHook('actionCustomerAccountAdd');
 	}
 
 	public function getContent()
@@ -308,18 +307,6 @@ class LoyaltyLion extends Module
 		$html = $this->display(__FILE__, 'sdk_init.tpl');
 
 		return $html;
-	}
-
-	/**
-	 * Fired when customer opens my account page.
-	 *
-	 * We use this hook to add Loyalty program button to My Account page.
-	 * 
-	 * @return [type] [description]
-	 */
-	public function hookDisplayCustomerAccount() {
-		$html = $this->display(__FILE__, 'my_account_button.tpl');
-		return $html;	
 	}
 
 	/**
