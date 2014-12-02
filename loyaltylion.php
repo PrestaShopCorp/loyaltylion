@@ -53,7 +53,8 @@ class LoyaltyLion extends Module
 		parent::__construct();
 
 		$this->displayName = $this->l('LoyaltyLion');
-		$this->description = $this->l('LoyaltyLion Prestashop module');
+		$this->description = $this->l('Add a loyalty program to your store in minutes. Increase customer loyalty and happiness by rewarding referrals, purchases, signups, reviews and visits.
+');
 
 		$this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
 	}

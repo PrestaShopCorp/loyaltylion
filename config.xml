@@ -3,7 +3,7 @@
 	<name>loyaltylion</name>
 	<displayName><![CDATA[LoyaltyLion]]></displayName>
 	<version><![CDATA[1.1]]></version>
-	<description><![CDATA[LoyaltyLion Prestashop module]]></description>
+	<description><![CDATA[Add a loyalty program to your store in minutes. Increase customer loyalty and happiness by rewarding referrals, purchases, signups, reviews and visits.]]></description>
 	<author><![CDATA[LoyaltyLion]]></author>
 	<tab><![CDATA[pricing_promotion]]></tab>
 	<confirmUninstall><![CDATA[Are you sure you want to uninstall?]]></confirmUninstall>
