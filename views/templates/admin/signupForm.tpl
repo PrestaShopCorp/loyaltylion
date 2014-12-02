@@ -43,7 +43,7 @@
         <div class='sub-heading'>{l s='Create your own social loyalty program' mod='loyaltylion'}</div>
         <p>{l s='Show customers they’re valued and increase sales by rewarding referrals, purchases, signups, reviews and visits.' mod='loyaltylion'}</p>
 
-        <p>{l s='You decide what to reward and how to reward it for example, 100 points for signups, 5 points per $1 spent and 1000 points per referral. Customers collect points and redeem them for vouchers to spend at your store.' mod='loyaltylion'}</p>
+        <p>{l s='You decide what to reward and how to reward it; for example, 100 points for signups, 5 points per $1 spent and 1000 points per referral. Customers collect points and redeem them for vouchers to spend at your store.' mod='loyaltylion'}</p>
 
         <div class='sub-heading'>{l s='Benefits' mod='loyaltylion'}</div>
         <ul>
@@ -110,7 +110,7 @@
         </div>
 
         <div class='signup-btn'>
-          <a href='http://{$loyaltylion_host|escape}/signup/prestashop?shop_details={$shop_details}' class='orange-btn' target='_blank'>{l s='Start free trial' mod='loyaltylion'}</a>
+          <a href='http://{$loyaltylion_host|escape}/signup/prestashop?shop_details={$shop_details}' class='orange-btn' target='_blank'>{l s='Start setup' mod='loyaltylion'}</a>
         </div>
         
       </div>
@@ -123,7 +123,7 @@
     </div>
     <div class='sidebar'>
       <div class='box signup'>
-        <a href='http://{$loyaltylion_host|escape}/signup/prestashop?shop_details={$shop_details}' class='orange-btn' target='_blank'>{l s='Start free trial' mod='loyaltylion'}</a>
+        <a href='http://{$loyaltylion_host|escape}/signup/prestashop?shop_details={$shop_details}' class='orange-btn' target='_blank'>{l s='Start setup' mod='loyaltylion'}</a>
       </div>
       <div class='box contact-info'>
         <div class='sub-heading'>{l s='Contact us' mod='loyaltylion'}</div>
@@ -131,10 +131,10 @@
       </div>
       <div class='box screenshots'>
         <div class='sub-heading'>{l s='Screenshots' mod='loyaltylion'}</div>
-        <a class='screenshot mobile' href='../modules/loyaltylion/img/screenshots/mobile.jpg' target='_blank'></a>
-        <a class='screenshot refer-screen' href='../modules/loyaltylion/img/screenshots/refer-screen.jpg' target='_blank'></a>
-        <a class='screenshot widget' href='../modules/loyaltylion/img/screenshots/widget.jpg' target='_blank'></a>
-        <a class='screenshot customise' href='../modules/loyaltylion/img/screenshots/customise.jpg' target='_blank'></a>
+        <a class='screenshot mobile' href='../modules/loyaltylion/img/screenshots/mobile.jpg' target='_blank' data-loyaltylion-screenshot></a>
+        <a class='screenshot refer-screen' href='../modules/loyaltylion/img/screenshots/refer-screen.jpg' target='_blank' data-loyaltylion-screenshot></a>
+        <a class='screenshot widget' href='../modules/loyaltylion/img/screenshots/widget.jpg' target='_blank' data-loyaltylion-screenshot></a>
+        <a class='screenshot customise' href='../modules/loyaltylion/img/screenshots/customise.jpg' target='_blank' data-loyaltylion-screenshot></a>
       </div>
       <div class='box existing-account'>
         {l s='Already have a LoyaltyLion account?' mod='loyaltylion'} <a href='{$base_uri|escape}&amp;force_show_settings=1'>{l s='Click here' mod='loyaltylion'}</a>
