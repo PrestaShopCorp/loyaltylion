@@ -182,6 +182,8 @@ $orange1: darken(#ff960d, 5%);
 
     .pricing {
 
+      padding-top: 20px;
+
       .boxes {
         // padding-top: 5px;
       }
@@ -193,34 +195,41 @@ $orange1: darken(#ff960d, 5%);
 
         .plan-name {
           font-size: 20px;
-          margin-bottom: 10px;
+          margin-bottom: 15px;
+          color: #333;
         }
 
         .plan-box {
-          padding: 0 10px;
+          // padding: 0 10px;
         }
 
         .price-box {
           // background-color: #484B5E;
-          background-color: #777;
-          color: #fff;
-          padding: 15px 0;
+          // background-color: #777;
+          background-color: #fbfbfb;
+          color: #F38900;
+          padding: 20px 0;
           // border-radius: 6px 6px 0 0;
-          border-radius: 6px;
+          // border-radius: 6px;
+          border: 1px solid #E5E5E5;
+          border-left-width: 0;
+          border-top: 1px solid #f1f1f1;
+          border-bottom-width: 2px;
 
           .price {
-            font-size: 26px;
+            font-size: 38px;
             font-weight: 500;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
 
             span {
-              font-size: 16px;
+              font-size: 20px;
               font-weight: 400;
+              margin-left: 3px;
             }
           }
 
           .limit {
-            color: #efefef;
+            color: #555;
             font-size: 14px;
 
             a {
@@ -232,6 +241,12 @@ $orange1: darken(#ff960d, 5%);
                 text-decoration: none;
               }
             }
+          }
+        }
+
+        &:first-child {
+          .price-box {
+            border-left-width: 1px;
           }
         }
       }

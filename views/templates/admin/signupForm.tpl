@@ -60,7 +60,7 @@
           <li>{l s='Refer a friend on Facebook, Twitter and via email' mod='loyaltylion'}</li>
           <li>{l s='Automatically generate bulk voucher codes' mod='loyaltylion'}</li>
           <li>{l s='Name and customise the program to match your store' mod='loyaltylion'}</li>
-          <li>{l s='White label available on <em>Medium</em> or higher plans' mod='loyaltylion'}</li>
+          <li>{l s='No LoyaltyLion branding anywhere'}</li>
           <li>{l s='Gain customer insights: most engaged customers and top referrers' mod='loyaltylion'}</li>
           <li>{l s='Mobile friendly' mod='loyaltylion'}</li>
         </ul>
@@ -72,13 +72,24 @@
         <div class='pricing'>
           <div class='boxes'>
             <div class='pricing-box'>
+              <div class='plan-name'>{l s='Starter' mod='loyaltylion'}</div>
+              <div class='plan-box'>
+                <div class='price-box'>
+                  <div class='price'>
+                    <div class='price'>£99<span>/mo</span></div>
+                  </div>
+                  <div class='limit'>{l s='up to' mod='loyaltylion'} 800 {l s='orders /mo' mod='loyaltylion'}</div>
+                </div>
+              </div>
+            </div>
+            <div class='pricing-box'>
               <div class='plan-name'>{l s='Small' mod='loyaltylion'}</div>
               <div class='plan-box'>
                 <div class='price-box'>
                   <div class='price'>
-                    <div class='price'>$59<span>/mo</span></div>
+                    <div class='price'>£249<span>/mo</span></div>
                   </div>
-                  <div class='limit'>{l s='up to 250 orders' mod='loyaltylion'}</div>
+                  <div class='limit'>{l s='up to' mod='loyaltylion'} 2000 {l s='orders /mo' mod='loyaltylion'}</div>
                 </div>
               </div>
             </div>
@@ -87,26 +98,15 @@
               <div class='plan-box'>
                 <div class='price-box'>
                   <div class='price'>
-                    <div class='price'>$159<span>/mo</span></div>
+                    <div class='price'>£499<span>/mo</span></div>
                   </div>
-                  <div class='limit'>{l s='up to 750 orders' mod='loyaltylion'}</div>
-                </div>
-              </div>
-            </div>
-            <div class='pricing-box'>
-              <div class='plan-name'>{l s='Large' mod='loyaltylion'}</div>
-              <div class='plan-box'>
-                <div class='price-box'>
-                  <div class='price'>
-                    <div class='price'>$399<span>/mo</span></div>
-                  </div>
-                  <div class='limit'>{l s='up to 2000 orders' mod='loyaltylion'}</div>
+                  <div class='limit'>{l s='up to' mod='loyaltylion'} 4000 {l s='orders /mo' mod='loyaltylion'}</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <p class='enterprise'>{l s='More than 2000 orders a month?' mod='loyaltylion'} <a href='mailto:hello@loyaltylion.com'>{l s='Contact us' mod='loyaltylion'}</a></p>
+          <p class='enterprise'>{l s='More than 4000 orders a month?' mod='loyaltylion'} <a href='mailto:hello@loyaltylion.com'>{l s='Contact us' mod='loyaltylion'}</a></p>
         </div>
 
         <div class='signup-btn'>
