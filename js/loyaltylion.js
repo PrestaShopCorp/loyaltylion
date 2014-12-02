@@ -10,7 +10,8 @@
       elem.on('click', function(e) {
         e.preventDefault();
 
-        var href = $(this).attr('href');
+        var thumbnail_elem = $(this);
+        var href = thumbnail_elem.attr('href');
         var viewport_width = $(window).width();
         var viewport_height = $(window).height();
 
@@ -30,7 +31,7 @@
           'margin-top': -(height/2)
         });
         var close_btn = $("<a href='#' class='loyaltylion-lightbox-close-btn'>&times;</a>").appendTo(lightbox);
-        $("<img src='" + href + "' width='100%' height='100%'>").appendTo(lightbox);
+        var img = $("<img src='" + href + "' width='100%' height='100%'>").appendTo(lightbox);
 
         var background = $("<div id='loyaltylion-lightbox-background'></div>");
 
@@ -40,6 +41,14 @@
           lightbox.addClass('visible');
           background.addClass('visible');
         }, 20);
+
+        img.on('click', function(e) {
+          var next = thumbnail_elem.next();
+          if (!next.length) next = thumbnail_elem.siblings().first();
+
+          thumbnail_elem = next;
+          img.attr('src', thumbnail_elem.attr('href'));
+        });
 
         close_btn.on('click', function(e) {
           e.preventDefault();

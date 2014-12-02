@@ -131,10 +131,12 @@
       </div>
       <div class='box screenshots'>
         <div class='sub-heading'>{l s='Screenshots' mod='loyaltylion'}</div>
-        <a class='screenshot mobile' href='../modules/loyaltylion/img/screenshots/mobile.jpg' target='_blank' data-loyaltylion-screenshot></a>
-        <a class='screenshot refer-screen' href='../modules/loyaltylion/img/screenshots/refer-screen.jpg' target='_blank' data-loyaltylion-screenshot></a>
-        <a class='screenshot widget' href='../modules/loyaltylion/img/screenshots/widget.jpg' target='_blank' data-loyaltylion-screenshot></a>
-        <a class='screenshot customise' href='../modules/loyaltylion/img/screenshots/customise.jpg' target='_blank' data-loyaltylion-screenshot></a>
+        <div class='screenshot-links'>
+          <a class='screenshot mobile' href='../modules/loyaltylion/img/screenshots/mobile.jpg' target='_blank' data-loyaltylion-screenshot></a>
+          <a class='screenshot refer-screen' href='../modules/loyaltylion/img/screenshots/refer-screen.jpg' target='_blank' data-loyaltylion-screenshot></a>
+          <a class='screenshot widget' href='../modules/loyaltylion/img/screenshots/widget.jpg' target='_blank' data-loyaltylion-screenshot></a>
+          <a class='screenshot customise' href='../modules/loyaltylion/img/screenshots/customise.jpg' target='_blank' data-loyaltylion-screenshot></a>
+        </div>
       </div>
       <div class='box existing-account'>
         {l s='Already have a LoyaltyLion account?' mod='loyaltylion'} <a href='{$base_uri|escape}&amp;force_show_settings=1'>{l s='Click here' mod='loyaltylion'}</a>
