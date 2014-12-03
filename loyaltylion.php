@@ -87,15 +87,9 @@ class LoyaltyLion extends Module
 		$this->setBaseUri();
 
 		if (isset($this->context->controller))
-		{
 			$this->context->controller->addCSS($this->_path.'/css/loyaltylion.min.css', 'all');
-			// $this->context->controller->addJS($this->_path.'/js/loyaltylion.min.js');
-		}
 		else
-		{
 			echo '<link rel="stylesheet" type="text/css" href="../modules/loyaltylion-prestashop/css/loyaltylion.min.css" />';
-			// echo '<script src="../modules/loyaltylion-prestashop/js/loyaltylion.min.js"></script>';
-		}
 
 		switch ($this->getConfigurationAction())
 		{
@@ -261,17 +255,23 @@ class LoyaltyLion extends Module
 	{
 		$shop_details = array(
 			'name' => Configuration::get('PS_SHOP_NAME'),
-			'domain' => Configuration::get('PS_SHOP_DOMAIN'),
 			'url' => $this->context->shop->getBaseURL(),
 			'currencies' => array(),
+			'languages' => array(),
 			'module_base_uri' => $_SERVER['REQUEST_URI'],
 		);
 
 		// add currencies to shop details packet, so we can try to set the default currency during setup
 		foreach (Currency::getCurrencies() as $currency)
-			$shop_details['currencies'][] = $currency['iso_code'];
+			$shop_details['currencies'][] = strtolower($currency['iso_code']);
 
-		var_dump($shop_details);
+		// same thing for languages (we'll send both iso code and language code, the latter we could use
+		// to automatically set the right locale settings)
+		foreach (Language::getLanguages() as $language)
+			$shop_details['languages'][] = array(
+				'iso_code' => $language['iso_code'],
+				'language_code' => $language['language_code'],
+			);
 
 		$this->context->smarty->assign(array(
 			'base_uri' => $this->base_uri,
