@@ -84,7 +84,7 @@ class LoyaltyLion extends Module
 
 	public function getContent()
 	{
-		$this->setBaseUri();
+		$this->base_uri = $this->getBaseUri();
 
 		if (isset($this->context->controller))
 			$this->context->controller->addCSS($this->_path.'/css/loyaltylion.min.css', 'all');
@@ -258,8 +258,15 @@ class LoyaltyLion extends Module
 			'url' => $this->context->shop->getBaseURL(),
 			'currencies' => array(),
 			'languages' => array(),
-			'module_base_uri' => $_SERVER['REQUEST_URI'],
 		);
+
+		// construct a url for this (loyaltylion) module page, so we can direct merchants to this
+		// page from pages on loyaltylion.com
+		$module_url = str_replace($_SERVER['QUERY_STRING'], '', $_SERVER['REQUEST_URI']);
+		$module_url = (Tools::usingSecureMode() || Configuration::get('PS_SSL_ENABLED') ? 'https://' : 'http://')
+			.Configuration::get('PS_SHOP_DOMAIN').$module_url;
+
+		$shop_details['module_base_url'] = $this->getBaseUri($module_url);
 
 		// add currencies to shop details packet, so we can try to set the default currency during setup
 		foreach (Currency::getCurrencies() as $currency)
@@ -736,18 +743,16 @@ class LoyaltyLion extends Module
 	/**
 	 * Set the base URI for this module page
 	 */
-	private function setBaseUri()
+	private function getBaseUri($base = 'index.php?')
 	{
-		$this->base_uri = 'index.php?';
-
 		foreach ($_GET as $k => $value)
 			// don't include conf parameter, because that is passed in when app is installed
 			// and isn't needed after that. we also don't want any of our own parameters because
 			// we'll use those to navigate between pages (e.g. to force view the settings page)
 			if (!in_array($k, array('conf', 'force_show_settings', 'force_show_signup')))
-				$this->base_uri .= $k.'='.$value.'&';
+				$base .= $k.'='.$value.'&';
 
-		$this->base_uri = rtrim($this->base_uri, '&');
+		return rtrim($base, '&');
 	}
 
 	/**
