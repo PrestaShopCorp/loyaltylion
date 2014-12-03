@@ -29,6 +29,9 @@
 	<div class='settings-box'>
 		<div class='heading'></div>
 		<div class='content'>
+			<div class='no-account'>
+				Don't have a LoyaltyLion account yet? <a href='#'>Click here</a> to get started</div>
+			</div>
 			<div class='token-secret'>
 				<form action='{$action|escape}' method='post'>
 					<div class='group token'>

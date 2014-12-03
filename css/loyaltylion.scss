@@ -282,6 +282,18 @@ $orange1: darken(#ff960d, 5%);
     margin: 30px auto;
     border: 1px solid #ddd;
 
+    .no-account {
+      text-align: center;
+      font-size: 14px;
+      border-bottom: 1px solid #f2f2f2;
+      background-color: #fafafa;
+      padding: 15px 0;
+
+      a {
+        text-decoration: underline;
+      }
+    }
+
     .token-secret {
 
       .group {
