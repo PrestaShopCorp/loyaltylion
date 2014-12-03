@@ -61,7 +61,8 @@ class LoyaltyLion extends Module
 
 	public function install()
 	{
-		if (!function_exists('curl_init')) {
+		if (!function_exists('curl_init'))
+		{
 			$this->setError($this->l('LoyaltyLion needs the PHP Curl extension. Please ask your hosting ' +
 				'provider to enable it before installing LoyaltyLion.'));
 			return false;
@@ -116,11 +117,12 @@ class LoyaltyLion extends Module
 	/**
 	 * Sets LoyaltyLion token and secret.
 	 */
-	public function setTokenAndSecret() {
+	public function setTokenAndSecret()
+	{
 		$token = Tools::getValue('loyaltylion_token');
 		$secret = Tools::getValue('loyaltylion_secret');
 
-		if(!$token || !$secret)
+		if (!$token || !$secret)
 			return $this->displaySignupForm();
 
 		Configuration::updateValue('LOYALTYLION_TOKEN', $token);
@@ -136,26 +138,26 @@ class LoyaltyLion extends Module
 	 * Pulls voucher codes and rewards from LoyaltyLion merchant account and
 	 * adds them to Prestashop site.
 	 */
-	public function addVoucherCodes() {
+	public function addVoucherCodes()
+	{
 		$rewards_with_voucher_codes = $this->getRewardsWithVoucherCodes();
 
 		$success = 0;
 
-		foreach ($rewards_with_voucher_codes as $reward) {
+		foreach ($rewards_with_voucher_codes as $reward)
+		{
 
-			foreach($reward->vouchers as $voucher) {
+			foreach ($reward->vouchers as $voucher)
+			{
 				$result = $this->createRule($voucher, $reward->cost, $this->getCurrencyId($reward->cost_currency));
 
 				if ($result)
 					$success++;
-
 			}
-
 		}
 
-		if($success > 0) {
+		if ($success > 0)
 			$this->updateSiteMetadata(array('vouchers_added' => true));
-		}
 
 		$this->output .= $this->displayConfirmation($this->l("${success} codes are imported successfuly. Please close this window."));
 	}
@@ -231,17 +233,15 @@ class LoyaltyLion extends Module
 			}
 		}
 
-		$this->context->smarty->assign(
-			array(
-				'action' => $this->base_uri,
-				'token' => $token,
-				'secret' => $secret,
-				'currencies' => Currency::getCurrencies(),
-				'defaultCurrency' => Configuration::get('PS_CURRENCY_DEFAULT'),
-				'form_values' => $this->form_values,
-				'loyaltylion_host' => $this->getLoyaltyLionHost(),
-			)
-		);
+		$this->context->smarty->assign(array(
+			'action' => $this->base_uri,
+			'token' => $token,
+			'secret' => $secret,
+			'currencies' => Currency::getCurrencies(),
+			'defaultCurrency' => Configuration::get('PS_CURRENCY_DEFAULT'),
+			'form_values' => $this->form_values,
+			'loyaltylion_host' => $this->getLoyaltyLionHost(),
+		));
 
 		$this->output .= $this->display(__FILE__, 'views/templates/admin/settingsForm.tpl');
 	}
@@ -259,13 +259,11 @@ class LoyaltyLion extends Module
 			'base_uri' => $_SERVER['REQUEST_URI'] 
 		));
 
-		$this->context->smarty->assign(
-			array(
-				'base_uri' => $this->base_uri,
-				'loyaltylion_host' => $this->getLoyaltyLionHost(),
-				'shop_details' => base64_encode($shop_details)
-			)
-		);
+		$this->context->smarty->assign(array(
+			'base_uri' => $this->base_uri,
+			'loyaltylion_host' => $this->getLoyaltyLionHost(),
+			'shop_details' => base64_encode($shop_details)
+		));
 
 		$this->output .= $this->display(__FILE__, 'views/templates/admin/signupForm.tpl');
 	}
@@ -329,14 +327,13 @@ class LoyaltyLion extends Module
 			'customer_email' => $customer->email,
 			'date' => date('c'),
 		);
-	
+
 		if ($this->context->cookie->loyaltylion_referral_id)
 			$data['referral_id'] = $this->context->cookie->loyaltylion_referral_id;
 
 		$this->loadLoyaltyLionClient();
 
 		$response = $this->client->activities->track('signup', $data);
-
 
 		if (!$response->success)
 		{
@@ -557,32 +554,25 @@ class LoyaltyLion extends Module
 			$data['total_paid'] = (string)$order->total_paid_real;
 		}
 
-		/* cancelled? */
+		// cancelled?
 		if ($order->getCurrentState() == Configuration::get('PS_OS_CANCELED'))
 			$data['cancellation_status'] = 'cancelled';
-		/*
-		credit slip hook
-		actionOrderSlipAdd
-		actionProductCancel
 
-		refunds in prestashop are a bit of a clusterfuck, so this isn't too simple and might still have bugs
-		*/
+		// credit slip hook
+		// actionOrderSlipAdd
+		// actionProductCancel
+		// refunds in prestashop are a bit of a clusterfuck, so this isn't too simple and might still have bugs
 
 		$total_refunded = 0;
 
-		/* i think we can simplify this by querying for credit (order) slips attached to this order */
+		// i think we can simplify this by querying for credit (order) slips attached to this order
 		$credit_slips = OrderSlip::getOrdersSlip($order->id_customer, $order->id);
 
-		/*
-		 * if we have at least one credit slip that should mean we have had a refund, so let's add them
-		 * NOTE: the "amount" is the unit price of the product * quantity refunded, plus shipping if they opted
-		 * refund the shipping cost. However PS doesn't stop you from refunding shipping cost more than
-		 * once if you do multiple refunds, so the refund total could end up more than the actual total
-		 * ... if this happens we will just cap it to the order total so it doesn't confuse loyaltylion
-		*/
-
-		// what the fuck
-		// why can't I do this?
+		// if we have at least one credit slip that should mean we have had a refund, so let's add them
+		// NOTE: the "amount" is the unit price of the product * quantity refunded, plus shipping if they opted
+		// refund the shipping cost. However PS doesn't stop you from refunding shipping cost more than
+		// once if you do multiple refunds, so the refund total could end up more than the actual total
+		// ... if this happens we will just cap it to the order total so it doesn't confuse loyaltylion
 
 		foreach ($credit_slips as $slip)
 		{
@@ -600,16 +590,14 @@ class LoyaltyLion extends Module
 			}
 			else
 			{
-				/*
-				if the total refunded is equal (or, perhaps, greater than?) the total cost of the order,
-				we'll just class that as a full refund
-				*/
+				// if the total refunded is equal (or, perhaps, greater than?) the total cost of the order,
+				// we'll just class that as a full refund
 				$data['refund_status'] = 'refunded';
 				$data['total_refunded'] = (float)$order->total_paid;
 			}
 		}
 
-		/* refund state: PS_OS_REFUND */
+		// refund state: PS_OS_REFUND
 
 		$this->loadLoyaltyLionClient();
 		$response = $this->client->orders->update($order->id, $data);
@@ -665,7 +653,6 @@ class LoyaltyLion extends Module
 
 		if (isset($_SERVER['LOYALTYLION_API_BASE']))
 			$options['base_uri'] = $_SERVER['LOYALTYLION_API_BASE'];
-
 
 		$this->client = new LoyaltyLion_Client($this->getToken(), $this->getSecret(), $options);
 	}
@@ -757,7 +744,8 @@ class LoyaltyLion extends Module
 	 * Gets rewards from Merchant account. Uses LoyaltyLion PHP SDK with different
 	 * base url.
 	 */
-	private function getRewardsWithVoucherCodes() {
+	private function getRewardsWithVoucherCodes()
+	{
 		$base_uri = 'http://'.$this->getLoyaltyLionHost().'/prestashop';
 		$connection = new LoyaltyLion_Connection($this->getToken(), $this->getSecret(), $base_uri);
 
@@ -773,11 +761,12 @@ class LoyaltyLion extends Module
 	 * 
 	 * @return [type] [description]
 	 */
-	private function updateSiteMetadata($data) {
+	private function updateSiteMetadata($data)
+	{
 		$base_uri = 'http://'.$this->getLoyaltyLionHost().'/prestashop';
 		$connection = new LoyaltyLion_Connection($this->getToken(), $this->getSecret(), $base_uri);
 		$response = $connection->post('/metadata', array('metadata' => $data));
-		
+
 		if (isset($response->error)) return;
 
 		$rewards = json_decode($response->body);
@@ -793,7 +782,8 @@ class LoyaltyLion extends Module
 	 * @param  [type] $discount_amount_currency [description]
 	 * @return [type]                           [description]
 	 */
-	private function createRule($code, $discount_amount, $discount_amount_currency) {
+	private function createRule($code, $discount_amount, $discount_amount_currency)
+	{
 		$existing_codes = CartRule::getCartsRuleByCode($code, (int)$this->context->language->id);
 
 		if (!empty($existing_codes))
@@ -828,14 +818,12 @@ class LoyaltyLion extends Module
 	 * @param  [type] $code [description]
 	 * @return [type]       [description]
 	 */
-	private function getCurrencyId($code) {
+	private function getCurrencyId($code)
+	{
 		$currencies = Currency::getCurrencies();
 
-		foreach ($currencies as $currency) {
-			if(strtolower($currency['iso_code']) == strtolower($code))
+		foreach ($currencies as $currency)
+			if (strtolower($currency['iso_code']) == strtolower($code))
 				return $currency['id_currency'];
-		}
-
 	}
-
 }
