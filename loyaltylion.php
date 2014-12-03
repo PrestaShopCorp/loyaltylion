@@ -89,12 +89,12 @@ class LoyaltyLion extends Module
 		if (isset($this->context->controller))
 		{
 			$this->context->controller->addCSS($this->_path.'/css/loyaltylion.min.css', 'all');
-			$this->context->controller->addJS($this->_path.'/js/loyaltylion.min.js');
+			// $this->context->controller->addJS($this->_path.'/js/loyaltylion.min.js');
 		}
 		else
 		{
 			echo '<link rel="stylesheet" type="text/css" href="../modules/loyaltylion-prestashop/css/loyaltylion.min.css" />';
-			echo '<script src="../modules/loyaltylion-prestashop/js/loyaltylion.min.js"></script>';
+			// echo '<script src="../modules/loyaltylion-prestashop/js/loyaltylion.min.js"></script>';
 		}
 
 		switch ($this->getConfigurationAction())
@@ -259,16 +259,24 @@ class LoyaltyLion extends Module
 	 */
 	public function displaySignupForm()
 	{
-		$shop_details = json_encode(array(
-			'shop_name' => Configuration::get('PS_SHOP_NAME'),
-			'shop_domain' => Configuration::get('PS_SHOP_DOMAIN'),
-			'base_uri' => $_SERVER['REQUEST_URI'],
-		));
+		$shop_details = array(
+			'name' => Configuration::get('PS_SHOP_NAME'),
+			'domain' => Configuration::get('PS_SHOP_DOMAIN'),
+			'url' => $this->context->shop->getBaseURL(),
+			'currencies' => array(),
+			'module_base_uri' => $_SERVER['REQUEST_URI'],
+		);
+
+		// add currencies to shop details packet, so we can try to set the default currency during setup
+		foreach (Currency::getCurrencies() as $currency)
+			$shop_details['currencies'][] = $currency['iso_code'];
+
+		var_dump($shop_details);
 
 		$this->context->smarty->assign(array(
 			'base_uri' => $this->base_uri,
 			'loyaltylion_host' => $this->getLoyaltyLionHost(),
-			'shop_details' => base64_encode($shop_details)
+			'shop_details' => base64_encode(json_encode($shop_details)),
 		));
 
 		$this->output .= $this->display(__FILE__, 'views/templates/admin/signupForm.tpl');

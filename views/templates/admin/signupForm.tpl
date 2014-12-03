@@ -110,7 +110,7 @@
         </div>
 
         <div class='signup-btn'>
-          <a href='http://{$loyaltylion_host|escape}/signup/prestashop?shop_details={$shop_details}' class='orange-btn' target='_blank'>{l s='Start setup' mod='loyaltylion'}</a>
+          <a href='http://{$loyaltylion_host|escape}/platforms/land/prestashop?shop_details={$shop_details}' class='orange-btn' target='_blank'>{l s='Start setup' mod='loyaltylion'}</a>
         </div>
         
       </div>
@@ -123,7 +123,7 @@
     </div>
     <div class='sidebar'>
       <div class='box signup'>
-        <a href='http://{$loyaltylion_host|escape}/signup/prestashop?shop_details={$shop_details}' class='orange-btn' target='_blank'>{l s='Start setup' mod='loyaltylion'}</a>
+        <a href='http://{$loyaltylion_host|escape}/platforms/land/prestashop?shop_details={$shop_details}' class='orange-btn' target='_blank'>{l s='Start setup' mod='loyaltylion'}</a>
       </div>
       <div class='box existing-account'>
         {l s='Already have a LoyaltyLion account?' mod='loyaltylion'} <a href='{$base_uri|escape}&amp;force_show_settings=1'>{l s='Click here' mod='loyaltylion'}</a>
@@ -135,12 +135,17 @@
       <div class='box screenshots'>
         <div class='sub-heading'>{l s='Screenshots' mod='loyaltylion'}</div>
         <div class='screenshot-links'>
-          <a class='screenshot mobile' href='../modules/loyaltylion/img/screenshots/mobile.jpg' target='_blank' data-loyaltylion-screenshot></a>
-          <a class='screenshot refer-screen' href='../modules/loyaltylion/img/screenshots/refer-screen.jpg' target='_blank' data-loyaltylion-screenshot></a>
-          <a class='screenshot widget' href='../modules/loyaltylion/img/screenshots/widget.jpg' target='_blank' data-loyaltylion-screenshot></a>
-          <a class='screenshot customise' href='../modules/loyaltylion/img/screenshots/customise.jpg' target='_blank' data-loyaltylion-screenshot></a>
+          <a class='screenshot mobile fancybox' rel='group' href='../modules/loyaltylion/img/screenshots/mobile.jpg' target='_blank'></a>
+          <a class='screenshot refer-screen fancybox' rel='group' href='../modules/loyaltylion/img/screenshots/refer-screen.jpg' target='_blank'></a>
+          <a class='screenshot widget fancybox' rel='group' href='../modules/loyaltylion/img/screenshots/widget.jpg' target='_blank'></a>
+          <a class='screenshot customise ' rel='group' href='../modules/loyaltylion/img/screenshots/customise.jpg' target='_blank'></a>
         </div>
       </div>
     </div>
   </div>
 </div>
+<script>
+  $(document).ready(function () {
+    $('.fancybox').fancybox();
+  });
+</script>
