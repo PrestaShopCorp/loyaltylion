@@ -53,7 +53,8 @@ class LoyaltyLion extends Module
 		parent::__construct();
 
 		$this->displayName = $this->l('LoyaltyLion');
-		$this->description = $this->l('Add a loyalty program to your store in minutes. Increase customer loyalty and happiness by rewarding referrals, purchases, signups, reviews and visits.
+		$this->description = $this->l('Add a loyalty program to your store in minutes. Increase customer loyalty ' .
+			'and happiness by rewarding referrals, purchases, signups, reviews and visits.
 ');
 
 		$this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
@@ -115,7 +116,13 @@ class LoyaltyLion extends Module
 	}
 
 	/**
-	 * Sets LoyaltyLion token and secret.
+	 * Set the `LOYALTYLION_TOKEN` and `LOYALTYLION_SECRET` configuration values using the values
+	 * provided in the URL
+	 *
+	 * This is typically initiated during the setup procedure at loyaltylion.com, where we open this
+	 * page in a popup window and pass it the token & secret, which are generated during the initial
+	 * signup. This allows us to set the token and secret automatically, without the store owner having
+	 * to manually copy & paste them in
 	 */
 	public function setTokenAndSecret()
 	{
@@ -128,10 +135,10 @@ class LoyaltyLion extends Module
 		Configuration::updateValue('LOYALTYLION_TOKEN', $token);
 		Configuration::updateValue('LOYALTYLION_SECRET', $secret);
 
-		// Let LoyaltyLion know about this operation
+		// let LoyaltyLion know that we've set the token & secret, so setup can proceed over at loyaltylion.com
 		$this->updateSiteMetadata(array('token_and_secret_set' => true));
 
-		$this->output .= $this->displayConfirmation($this->l('Your LoyaltyLion token and secret is updated. Please close this window.'));
+		$this->output .= $this->displayConfirmation($this->l('Your LoyaltyLion token and secret have been set. Please close this window.'));
 	}
 
 	/**
@@ -141,12 +148,10 @@ class LoyaltyLion extends Module
 	public function addVoucherCodes()
 	{
 		$rewards_with_voucher_codes = $this->getRewardsWithVoucherCodes();
-
 		$success = 0;
 
 		foreach ($rewards_with_voucher_codes as $reward)
 		{
-
 			foreach ($reward->vouchers as $voucher)
 			{
 				$result = $this->createRule($voucher, $reward->cost, $this->getCurrencyId($reward->cost_currency));
@@ -207,7 +212,7 @@ class LoyaltyLion extends Module
 				$this->output .= $this->displayError($this->l('At least one code is required'));
 			else
 			{
-				/* reset form values */
+				// reset form values
 				$this->form_values['discount_amount'] = '';
 				$this->form_values['discount_amount_currency'] = '';
 				$this->form_values['codes'] = '';
@@ -234,6 +239,7 @@ class LoyaltyLion extends Module
 		}
 
 		$this->context->smarty->assign(array(
+			'base_uri' => $this->base_uri,
 			'action' => $this->base_uri,
 			'token' => $token,
 			'secret' => $secret,
@@ -256,7 +262,7 @@ class LoyaltyLion extends Module
 		$shop_details = json_encode(array(
 			'shop_name' => Configuration::get('PS_SHOP_NAME'),
 			'shop_domain' => Configuration::get('PS_SHOP_DOMAIN'),
-			'base_uri' => $_SERVER['REQUEST_URI'] 
+			'base_uri' => $_SERVER['REQUEST_URI'],
 		));
 
 		$this->context->smarty->assign(array(
@@ -283,7 +289,7 @@ class LoyaltyLion extends Module
 		// set the referral cookie here if we have one !
 		$referral_id = Tools::getValue('ll_ref_id');
 
-		/* if we have an id and we haven't already set a cookie for it (don't override existing ref cookie) */
+		// if we have an id and we haven't already set a cookie for it (don't override existing ref cookie)
 		if ($referral_id && !$this->context->cookie->loyaltylion_referral_id)
 			$this->context->cookie->__set('loyaltylion_referral_id', $referral_id);
 
@@ -445,10 +451,8 @@ class LoyaltyLion extends Module
 		$customer = new Customer((int)$order->id_customer);
 
 		$data = array(
-			/*
-			an order "reference" is not unique normally, but this method will make sure it is (it adds a #2 etc)
-			to the reference if there are multiple orders with the same one
-			*/
+			// an order "reference" is not unique normally, but this method will make sure it is (it adds a #2 etc)
+			// to the reference if there are multiple orders with the same one
 			'number' => (string)$order->getUniqReference(),
 			'total' => (string)$order->total_paid,
 			'total_shipping' => (string)$order->total_shipping,
@@ -528,10 +532,8 @@ class LoyaltyLion extends Module
 		if (!$order) return;
 
 		$data = array(
-			/*
-			an order "reference" is not unique normally, but this method will make sure it is (it adds a #2 etc)
-			to the reference if there are multiple orders with the same one
-			*/
+			// an order "reference" is not unique normally, but this method will make sure it is (it adds a #2 etc)
+			// to the reference if there are multiple orders with the same one
 			'number' => (string)$order->getUniqReference(),
 			'refund_status' => 'not_refunded',
 			'cancellation_status' => 'not_cancelled',
@@ -798,7 +800,7 @@ class LoyaltyLion extends Module
 
 		$now = time();
 		$rule->date_from = date('Y-m-d H:i:s', $now);
-		$rule->date_to = date('Y-m-d H:i:s', $now + (3600 * 24 * 365 * 10)); /* 10 years */
+		$rule->date_to = date('Y-m-d H:i:s', $now + (3600 * 24 * 365 * 10)); // 10 years
 		$rule->active = 1;
 
 		$rule->reduction_amount = $discount_amount;

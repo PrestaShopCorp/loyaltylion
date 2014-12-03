@@ -125,6 +125,9 @@
       <div class='box signup'>
         <a href='http://{$loyaltylion_host|escape}/signup/prestashop?shop_details={$shop_details}' class='orange-btn' target='_blank'>{l s='Start setup' mod='loyaltylion'}</a>
       </div>
+      <div class='box existing-account'>
+        {l s='Already have a LoyaltyLion account?' mod='loyaltylion'} <a href='{$base_uri|escape}&amp;force_show_settings=1'>{l s='Click here' mod='loyaltylion'}</a>
+      </div>
       <div class='box contact-info'>
         <div class='sub-heading'>{l s='Contact us' mod='loyaltylion'}</div>
         <p>&rsaquo; <a href='mailto:hello@loyaltylion.com'>hello@loyaltylion.com</a></p>
@@ -137,9 +140,6 @@
           <a class='screenshot widget' href='../modules/loyaltylion/img/screenshots/widget.jpg' target='_blank' data-loyaltylion-screenshot></a>
           <a class='screenshot customise' href='../modules/loyaltylion/img/screenshots/customise.jpg' target='_blank' data-loyaltylion-screenshot></a>
         </div>
-      </div>
-      <div class='box existing-account'>
-        {l s='Already have a LoyaltyLion account?' mod='loyaltylion'} <a href='{$base_uri|escape}&amp;force_show_settings=1'>{l s='Click here' mod='loyaltylion'}</a>
       </div>
     </div>
   </div>
