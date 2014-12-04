@@ -62,7 +62,6 @@ if (!class_exists('LoyaltyLion_Connection')) {
 
 		private function request($method, $path, $data)
 		{
-
 			$options = array(
 				CURLOPT_URL => $this->base_uri.$path,
 				CURLOPT_USERAGENT => 'loyaltylion-php-client-v2.0.0',
@@ -112,7 +111,8 @@ if (!class_exists('LoyaltyLion_Connection')) {
 					'status' => $headers['http_code'],
 					'error' => $error_msg,
 				);
-			} else
+			}
+			else
 			{
 				$response = array(
 					'status' => $headers['http_code'],

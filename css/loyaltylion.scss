@@ -380,6 +380,34 @@ $orange1: darken(#ff960d, 5%);
       }
     }
   }
+
+  .create-vouchers-async {
+    width: 80%;
+    margin: 50px auto;
+    text-align: center;
+    font-size: 16px;
+
+    p {
+      line-height: 30px;
+    }
+
+    .spinner {
+      margin-top: 3px;
+      width: 60px;
+      height: 60px;
+      display: inline-block;
+      background: url('../img/spinner_60x60.gif') no-repeat 0 0;
+    }
+
+    .loading, .complete {
+      padding: 20px;
+    }
+
+    .complete {
+      border: 3px solid #468847;
+      border-radius: 5px;
+    }
+  }
 }
 
 #loyaltylion-lightbox-background {

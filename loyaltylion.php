@@ -99,8 +99,11 @@ class LoyaltyLion extends Module
 			case 'set_token_secret':
 				$this->setTokenAndSecret();
 				break;
-			case 'add_voucher_codes':
-				$this->addVoucherCodes();
+			case 'create_reward':
+				$this->displayCreateVouchersAsync();
+				break;
+			case 'create_reward_async':
+				$this->createReward();
 				break;
 			default:
 				$this->displaySettingsForm();
@@ -136,6 +139,80 @@ class LoyaltyLion extends Module
 	}
 
 	/**
+	 * Create a new LoyaltyLion reward
+	 *
+	 * This should be called in a pop-up window from loyaltylion.com, and currently only supports creating
+	 * discounts, but could perhaps be extended in future to automatically create other types of reward
+	 *
+	 * For rewards of type discount:
+	 * 	
+	 * This method will send an API request to loyaltylion.com to create (or find) an reward with this
+	 * discount amount on the server and generate (and then retrieve) the requested amount of codes
+	 *
+	 * It will then create the generated codes in PrestaShop so they're actually real, and then finally report
+	 * this back to loyaltylion.com so it knows the codes are valid and can be given out as rewards
+	 * 
+	 * @return [type] [description]
+	 */
+	public function createReward()
+	{
+		$reward_data = Tools::getValue('ll_create_reward_async');
+
+		if (empty($reward_data))
+			return;
+
+		$reward_data = json_decode(base64_decode($reward_data));
+
+		if (!$reward_data || $reward_data->type != 'discount' || !$reward_data->discount_amount || !$reward_data->codes_to_generate)
+			return;
+
+		$connection = $this->getWebConnection();
+
+		// tell our server to automatically create this reward; this will return an array of codes we should then add to PS
+		$response = $connection->post('/prestashop/auto_create_reward', $reward_data);
+
+		if (isset($response->error) || !$response->body)
+		{
+			$this->output .= $this->displayError($this->l('Sorry - something went wrong'));
+			return;
+		}
+
+		$body = json_decode($response->body);
+		$codes = $body->generated_codes;
+
+		if (empty($codes))
+		{
+			$this->output .= $this->displayError($this->l('Sorry - something went wrong'));
+			return;
+		}
+
+		$amount = $reward_data->discount_amount;
+		$currency_id;
+
+		foreach (Currency::getCurrencies() as $c)
+			if ($c['iso_code'] == $reward_data->currency)
+			{
+				$currency_id = $c['id_currency'];
+				break;
+			}
+
+		if (!$currency_id)
+		{
+			$c = Currency::getDefaultCurrency();
+			$currency_id = $c['currency_id'];
+		}
+
+		$problem_codes = array();
+
+		foreach ($codes as $code)
+		{
+			$this->createRule($code, $amount, $currency_id);
+			if (!$result)
+				$problem_codes[] = $code;
+		}
+	}
+
+	/**
 	 * Pulls voucher codes and rewards from LoyaltyLion merchant account and
 	 * adds them to Prestashop site.
 	 */
@@ -159,6 +236,37 @@ class LoyaltyLion extends Module
 			$this->updateSiteMetadata(array('vouchers_added' => true));
 
 		$this->output .= $this->displayConfirmation($this->l("${success} codes are imported successfuly. Please close this window."));
+	}
+
+	public function displayCreateVouchersAsync()
+	{
+		$reward_data = Tools::getValue('ll_create_reward');
+
+		if (empty($reward_data))
+			return;
+
+		$reward_data_decoded = json_decode(base64_decode($reward_data));
+
+		if (!$reward_data_decoded
+			|| $reward_data_decoded->type != 'discount'
+			|| !$reward_data_decoded->discount_amount
+			|| !$reward_data_decoded->codes_to_generate)
+		{
+			$this->output .= $this->displayError($this->l('Sorry - something went wrong'));
+			return;
+		}
+
+		$currency = $this->getCurrency($reward_data_decoded->discount_currency);
+
+		$this->context->smarty->assign(array(
+			'create_voucher_codes_url' => str_replace('ll_create_reward', 'll_create_reward_async', $_SERVER['REQUEST_URI']),
+			'reward_data' => $reward_data,
+			'discount_amount' => $reward_data_decoded->discount_amount,
+			'codes_to_generate' => $reward_data_decoded->codes_to_generate,
+			'currency' => $currency ? $currency['sign'] : '',
+		));
+
+		$this->output .= $this->display(__FILE__, 'views/templates/admin/createVouchersAsync.tpl');
 	}
 
 	/**
@@ -649,11 +757,14 @@ class LoyaltyLion extends Module
 		if (Tools::getValue('force_show_signup'))
 			$action = 'signup';
 
-		if (Tools::getValue('set_token_secret'))
+		if (Tools::getValue('ll_set_token_secret'))
 			$action = 'set_token_secret';
 
-		if (Tools::getValue('add_voucher_codes'))
-			$action = 'add_voucher_codes';
+		if (Tools::getValue('ll_create_reward'))
+			$action = 'create_reward';
+
+		if (Tools::getValue('ll_create_reward_async'))
+			$action = 'create_reward_async';
 
 		return $action;
 	}
@@ -672,6 +783,23 @@ class LoyaltyLion extends Module
 			$options['base_uri'] = $_SERVER['LOYALTYLION_API_BASE'];
 
 		$this->client = new LoyaltyLion_Client($this->getToken(), $this->getSecret(), $options);
+	}
+
+	/**
+	 * Create and return a new Connection to make requests to the LoyaltyLion "web" server, i.e.
+	 * our front-end server used for integration with platforms (NOT for tracking events, etc)
+	 * 
+	 * @return [type] [description]
+	 */
+	private function getWebConnection()
+	{
+		require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.
+			'lib'.DIRECTORY_SEPARATOR.'loyaltylion-client'.DIRECTORY_SEPARATOR.'main.php');
+
+		$base_uri = ($this->getLoyaltyLionSslEnabled() ? 'https://' : 'http://').$this->getLoyaltyLionHost();
+		$connection = new LoyaltyLion_Connection($this->getToken(), $this->getSecret(), $base_uri);
+
+		return $connection;
 	}
 
 	/**
@@ -741,6 +869,21 @@ class LoyaltyLion extends Module
 	}
 
 	/**
+	 * Determine if we should be using SSL for any HTTP requests we make to LoyaltyLion's servers
+	 *
+	 * Unless this is explicitly set server environment variable, this will default to true. For example,
+	 * in development you might want to set the 'LOYALTYLION_SSL_ENABLED' variable to '0'
+	 * 
+	 * @return [type] [description]
+	 */
+	private function getLoyaltyLionSslEnabled()
+	{
+		return isset($_SERVER['LOYALTYLION_SSL_ENABLED'])
+			? !!$_SERVER['LOYALTYLION_SSL_ENABLED']
+			: true;
+	}
+
+	/**
 	 * Set the base URI for this module page
 	 */
 	private function getBaseUri($base = 'index.php?')
@@ -778,14 +921,15 @@ class LoyaltyLion extends Module
 	 */
 	private function updateSiteMetadata($data)
 	{
-		$base_uri = 'http://'.$this->getLoyaltyLionHost().'/prestashop';
-		$connection = new LoyaltyLion_Connection($this->getToken(), $this->getSecret(), $base_uri);
-		$response = $connection->post('/metadata', array('metadata' => $data));
+		$connection = $this->getWebConnection();
+		$response = $connection->post('/prestashop/metadata', array('metadata' => $data));
 
-		if (isset($response->error)) return;
+		return isset($response->error);
+	}
 
-		$rewards = json_decode($response->body);
-		return $rewards;
+	private function importVoucherCodes($codes, $amount, $currency)
+	{
+
 	}
 
 	/**
@@ -826,6 +970,15 @@ class LoyaltyLion extends Module
 		return $rule->add();
 	}
 
+	private function getCurrency($code)
+	{
+		$currencies = Currency::getCurrencies();
+
+		foreach ($currencies as $currency)
+			if (strtolower($currency['iso_code']) == strtolower($code))
+				return $currency;
+	}
+
 	/**
 	 * Iterates over all currencies, if iso code of currency
 	 * is same with currency code we look for, returs the id of it.
@@ -835,10 +988,11 @@ class LoyaltyLion extends Module
 	 */
 	private function getCurrencyId($code)
 	{
-		$currencies = Currency::getCurrencies();
+		$currency = $this->getCurrency($code);
 
-		foreach ($currencies as $currency)
-			if (strtolower($currency['iso_code']) == strtolower($code))
-				return $currency['id_currency'];
+		if ($currency)
+			return $currency->id_currency;
+		else
+			return null;
 	}
 }
