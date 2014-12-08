@@ -135,7 +135,7 @@ class LoyaltyLion extends Module
 		// let LoyaltyLion know that we've set the token & secret, so setup can proceed over at loyaltylion.com
 		$this->updateSiteMetadata(array('token_and_secret_set' => true));
 
-		$this->output .= $this->displayConfirmation($this->l('Your LoyaltyLion token and secret have been set. Please close this window.'));
+		$this->output .= $this->display(__FILE__, 'views/templates/admin/setTokenAndSecret.tpl');
 	}
 
 	/**
@@ -158,13 +158,13 @@ class LoyaltyLion extends Module
 	{
 		$reward_data = Tools::getValue('ll_create_reward_async');
 
-		if (empty($reward_data))
-			return;
+		header('Content-Type: application/json');
 
-		$reward_data = json_decode(base64_decode($reward_data));
+		if (!empty($reward_data))
+			$reward_data = json_decode(base64_decode($reward_data));
 
 		if (!$reward_data || $reward_data->type != 'discount' || !$reward_data->discount_amount || !$reward_data->codes_to_generate)
-			return;
+			$this->render('582', 422);
 
 		$connection = $this->getWebConnection();
 
@@ -172,29 +172,20 @@ class LoyaltyLion extends Module
 		$response = $connection->post('/prestashop/auto_create_reward', $reward_data);
 
 		if (isset($response->error) || !$response->body)
-		{
-			$this->output .= $this->displayError($this->l('Sorry - something went wrong'));
-			return;
-		}
+			$this->render('583', 500);
 
 		$body = json_decode($response->body);
 		$codes = $body->generated_codes;
+		$batch_id = $body->batch_id;
 
-		if (empty($codes))
-		{
-			$this->output .= $this->displayError($this->l('Sorry - something went wrong'));
-			return;
-		}
+		if (empty($codes) || empty($batch_id))
+			$this->render('584', 500);
 
 		$amount = $reward_data->discount_amount;
-		$currency_id;
+		$currency_id = $this->getCurrencyId($reward_data->discount_currency);
 
-		foreach (Currency::getCurrencies() as $c)
-			if ($c['iso_code'] == $reward_data->currency)
-			{
-				$currency_id = $c['id_currency'];
-				break;
-			}
+		if (!$currency_id)
+			$currency_id = Currency::getDefaultCurrency()->id_currency;
 
 		if (!$currency_id)
 		{
@@ -206,38 +197,38 @@ class LoyaltyLion extends Module
 
 		foreach ($codes as $code)
 		{
-			$this->createRule($code, $amount, $currency_id);
+			$result = $this->createRule($code, $amount, $currency_id);
 			if (!$result)
 				$problem_codes[] = $code;
 		}
+
+		// almost done - now we need to tell loyaltylion again that we've successfully imported these codes, and
+		// can therefore finalise the reward over there -- if there were any problem codes, we'll send these so
+		// they can be exluded and not given out to customers
+		$reward_data->batch_id = $batch_id;
+		$reward_data->problem_codes = $problem_codes;
+
+		$response = $connection->post('/prestashop/auto_create_reward', $reward_data);
+
+		if (isset($response->error))
+			// TODO: if something bad happened over at LL, we could clean up the CartRules here 
+			$this->render('584', 500);
+		else
+			$this->render('', 200);
 	}
 
 	/**
-	 * Pulls voucher codes and rewards from LoyaltyLion merchant account and
-	 * adds them to Prestashop site.
+	 * Display a page which will immediately trigger an ajax request back here, to create
+	 * a LoyaltyLion reward, get a list of generated codes, import said codes into PS, and
+	 * finally tell LoyaltyLion when its safe to finalise the voucher
+	 *
+	 * This operation can take some time, so for a more pleasant user experience, during
+	 * setup we open a popup window to this page so the operation occurs in the background,
+	 * so the user doesn't have to sit looking at a loading page wondering if something
+	 * went wrong
+	 * 
+	 * @return [type] [description]
 	 */
-	public function addVoucherCodes()
-	{
-		$rewards_with_voucher_codes = $this->getRewardsWithVoucherCodes();
-		$success = 0;
-
-		foreach ($rewards_with_voucher_codes as $reward)
-		{
-			foreach ($reward->vouchers as $voucher)
-			{
-				$result = $this->createRule($voucher, $reward->cost, $this->getCurrencyId($reward->cost_currency));
-
-				if ($result)
-					$success++;
-			}
-		}
-
-		if ($success > 0)
-			$this->updateSiteMetadata(array('vouchers_added' => true));
-
-		$this->output .= $this->displayConfirmation($this->l("${success} codes are imported successfuly. Please close this window."));
-	}
-
 	public function displayCreateVouchersAsync()
 	{
 		$reward_data = Tools::getValue('ll_create_reward');
@@ -765,7 +756,7 @@ class LoyaltyLion extends Module
 
 		if (Tools::getValue('ll_create_reward_async'))
 			$action = 'create_reward_async';
-
+		
 		return $action;
 	}
 
@@ -899,22 +890,6 @@ class LoyaltyLion extends Module
 	}
 
 	/**
-	 * Gets rewards from Merchant account. Uses LoyaltyLion PHP SDK with different
-	 * base url.
-	 */
-	private function getRewardsWithVoucherCodes()
-	{
-		$base_uri = 'http://'.$this->getLoyaltyLionHost().'/prestashop';
-		$connection = new LoyaltyLion_Connection($this->getToken(), $this->getSecret(), $base_uri);
-
-		$response = $connection->get('/rewards_with_voucher_codes');
-		if (isset($response->error)) return;
-
-		$rewards = json_decode($response->body);
-		return $rewards;
-	}
-
-	/**
 	 * Updates metadata information of site on LoyaltLion.
 	 * 
 	 * @return [type] [description]
@@ -925,11 +900,6 @@ class LoyaltyLion extends Module
 		$response = $connection->post('/prestashop/metadata', array('metadata' => $data));
 
 		return isset($response->error);
-	}
-
-	private function importVoucherCodes($codes, $amount, $currency)
-	{
-
 	}
 
 	/**
@@ -970,6 +940,12 @@ class LoyaltyLion extends Module
 		return $rule->add();
 	}
 
+	/**
+	 * Get a PrestaShop currency by looking it up with an `iso_code`
+	 * 
+	 * @param  [type] $code [description]
+	 * @return [type]       [description]
+	 */
 	private function getCurrency($code)
 	{
 		$currencies = Currency::getCurrencies();
@@ -991,8 +967,30 @@ class LoyaltyLion extends Module
 		$currency = $this->getCurrency($code);
 
 		if ($currency)
-			return $currency->id_currency;
+			return $currency['id_currency'];
 		else
 			return null;
+	}
+
+	/**
+	 * Render immediately (i.e. for ajax requests)
+	 *
+	 * If an array is provided as $body this will render a JSON response
+	 * 
+	 * @param  [type]  $body        [description]
+	 * @param  integer $status_code [description]
+	 * @return [type]               [description]
+	 */
+	private function render($body, $status_code = 200)
+	{
+		header('X-PHP-Response-Code: '.$status_code, true, (int)$status_code);
+
+		if (!empty($body) && is_array($body))
+		{
+			header('Content-Type: application/json');
+			$body = json_encode($body);
+		}
+
+		die($body);
 	}
 }

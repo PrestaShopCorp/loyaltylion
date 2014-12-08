@@ -27,19 +27,24 @@
 *}
 <div id='loyaltylion-configuration'>
   <div class='settings-box'>
-    <div class='heading'></div>
+    <!-- <div class='heading'></div> -->
     <div class='content'>
       <div class='create-vouchers-async'>
         <div class='loading'>
-          <p>Creating <strong>{$codes_to_generate}</strong> vouchers (each one for {$currency}{$discount_amount})
+          <p>{l s="Creating <strong>{$codes_to_generate}</strong> vouchers (each one for {$currency}{$discount_amount})" mod='loyaltylion'}
           <br>
-          This may take a minute or two - please don't close this window</p>
+          {l s="This may take a minute - please don't close this window" mod='loyaltylion'}</p>
           <div class='spinner'></div>
         </div>
         <div class='complete' style='display: none'>
-          <p>Finished importing <strong>{$codes_to_generate}</strong> codes!
-          <br>
-          Please close this window</p>
+          <p>{l s="Finished importing <strong>{$codes_to_generate}</strong> codes!" mod='loyaltylion'}
+          <br><br>
+          <a href='#' class='orange-btn small-btn' id='close-window-btn'>{l s='Click here to close this window' mod='loyaltylion'}</a></p>
+        </div>
+        <div class='error-happened' style='display: none'>
+          <p>{l s="Sorry, something went wrong! Reload this window to try again" mod='loyaltylion'}
+          <br><br>
+          {l s="If this problem persists, contact <a href='mailto:support@loyaltylion.com'>support@loyaltylion.com</a> and tell us the error code:" mod='loyaltylion'} <strong class='error-code'></strong></p>
         </div>
       </div>
     </div>
@@ -47,6 +52,11 @@
 </div>
 <script>
   $(document).ready(function() {
+
+    $('#close-window-btn').on('click', function(e) {
+      e.preventDefault();
+      window.close();
+    });
 
     var reward_data = "{$reward_data}";
     var url = "{$create_voucher_codes_url}";
@@ -57,6 +67,11 @@
       success: function(resp) {
         $('.create-vouchers-async .loading').hide();
         $('.create-vouchers-async .complete').show();
+        console.log(resp);
+      },
+      error: function(resp, txt) {
+        $('.create-vouchers-async .loading').hide();
+        $('.create-vouchers-async .error-happened').show().find('.error-code').text(resp.responseText || '000');
       }
     });
 

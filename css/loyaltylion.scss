@@ -35,7 +35,7 @@ $orange1: darken(#ff960d, 5%);
   }
   .small-btn {
     font-size: 16px;
-    padding: 10px;
+    padding: 10px 14px;
   }
 
   .heading {
@@ -381,7 +381,7 @@ $orange1: darken(#ff960d, 5%);
     }
   }
 
-  .create-vouchers-async {
+  .create-vouchers-async, .set-token-secret-success {
     width: 80%;
     margin: 50px auto;
     text-align: center;
@@ -399,12 +399,16 @@ $orange1: darken(#ff960d, 5%);
       background: url('../img/spinner_60x60.gif') no-repeat 0 0;
     }
 
-    .loading, .complete {
+    .loading, .complete, .error-happened {
       padding: 20px;
     }
 
     .complete {
-      border: 3px solid #468847;
+      // border: 3px solid #468847;
+      // border-radius: 5px;
+    }
+    .error-happened {
+      border: 3px solid red;
       border-radius: 5px;
     }
   }
