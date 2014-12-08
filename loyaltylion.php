@@ -105,6 +105,10 @@ class LoyaltyLion extends Module
 			case 'create_reward_async':
 				$this->createReward();
 				break;
+			case 'reset_configuration':
+				$this->resetConfiguration();
+				$this->displaySignupForm();
+				break;
 			default:
 				$this->displaySettingsForm();
 		}
@@ -136,6 +140,17 @@ class LoyaltyLion extends Module
 		$this->updateSiteMetadata(array('token_and_secret_set' => true));
 
 		$this->output .= $this->display(__FILE__, 'views/templates/admin/setTokenAndSecret.tpl');
+	}
+
+	/**
+	 * Reset all configuration values set for the LoyaltyLion module
+	 *
+	 * This will remove everything (e.g. token and secret), and is useful for testing or fixing issues
+	 */
+	private function resetConfiguration()
+	{
+		Configuration::updateValue('LOYALTYLION_TOKEN', null);
+		Configuration::updateValue('LOYALTYLION_SECRET', null);
 	}
 
 	/**
@@ -211,7 +226,7 @@ class LoyaltyLion extends Module
 		$response = $connection->post('/prestashop/auto_create_reward', $reward_data);
 
 		if (isset($response->error))
-			// TODO: if something bad happened over at LL, we could clean up the CartRules here 
+			// TODO: if something bad happened over at LL, we could clean up the CartRules here
 			$this->render('584', 500);
 		else
 			$this->render('', 200);
@@ -756,7 +771,10 @@ class LoyaltyLion extends Module
 
 		if (Tools::getValue('ll_create_reward_async'))
 			$action = 'create_reward_async';
-		
+
+		if (Tools::getValue('ll_reset'))
+			$action = 'reset_configuration';
+
 		return $action;
 	}
 
