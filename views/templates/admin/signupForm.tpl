@@ -138,7 +138,7 @@
           <a class='screenshot mobile fancybox' rel='group' href='../modules/loyaltylion/img/screenshots/mobile.jpg' target='_blank'></a>
           <a class='screenshot refer-screen fancybox' rel='group' href='../modules/loyaltylion/img/screenshots/refer-screen.jpg' target='_blank'></a>
           <a class='screenshot widget fancybox' rel='group' href='../modules/loyaltylion/img/screenshots/widget.jpg' target='_blank'></a>
-          <a class='screenshot customise ' rel='group' href='../modules/loyaltylion/img/screenshots/customise.jpg' target='_blank'></a>
+          <a class='screenshot customise fancybox ' rel='group' href='../modules/loyaltylion/img/screenshots/customise.jpg' target='_blank'></a>
         </div>
       </div>
     </div>
