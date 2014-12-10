@@ -31,20 +31,20 @@
     <div class='content'>
       <div class='create-vouchers-async'>
         <div class='loading'>
-          <p>{l s="Creating <strong>{$codes_to_generate}</strong> vouchers (each one for {$currency}{$discount_amount})" mod='loyaltylion'}
+          <p>{l s="Creating {$codes_to_generate} vouchers (each one for {$currency}{$discount_amount})" mod='loyaltylion'}
           <br>
           {l s="This may take a minute - please don't close this window" mod='loyaltylion'}</p>
           <div class='spinner'></div>
         </div>
         <div class='complete' style='display: none'>
-          <p>{l s="Finished importing <strong>{$codes_to_generate}</strong> codes!" mod='loyaltylion'}
+          <p>{l s="Finished importing {$codes_to_generate} codes!" mod='loyaltylion'}
           <br><br>
           <a href='#' class='orange-btn small-btn' id='close-window-btn'>{l s='Click here to close this window' mod='loyaltylion'}</a></p>
         </div>
         <div class='error-happened' style='display: none'>
           <p>{l s="Sorry, something went wrong! Reload this window to try again" mod='loyaltylion'}
           <br><br>
-          {l s="If this problem persists, contact <a href='mailto:support@loyaltylion.com'>support@loyaltylion.com</a> and tell us the error code:" mod='loyaltylion'} <strong class='error-code'></strong></p>
+          {l s="If this problem persists, contact support@loyaltylion.com and tell us the error code:" mod='loyaltylion'} <strong class='error-code'></strong></p>
         </div>
       </div>
     </div>
