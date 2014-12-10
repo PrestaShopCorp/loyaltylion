@@ -125,7 +125,7 @@ class LoyaltyLion extends Module
 	 * signup. This allows us to set the token and secret automatically, without the store owner having
 	 * to manually copy & paste them in
 	 */
-	public function setTokenAndSecret()
+	private function setTokenAndSecret()
 	{
 		$token = Tools::getValue('loyaltylion_token');
 		$secret = Tools::getValue('loyaltylion_secret');
@@ -169,11 +169,9 @@ class LoyaltyLion extends Module
 	 * 
 	 * @return [type] [description]
 	 */
-	public function createReward()
+	private function createReward()
 	{
 		$reward_data = Tools::getValue('ll_create_reward_async');
-
-		header('Content-Type: application/json');
 
 		if (!empty($reward_data))
 			$reward_data = json_decode(base64_decode($reward_data));
@@ -186,6 +184,8 @@ class LoyaltyLion extends Module
 		// tell our server to automatically create this reward; this will return an array of codes we should then add to PS
 		$response = $connection->post('/prestashop/auto_create_reward', $reward_data);
 
+		// if anything goes wrong here (or anywhere else in this method) we'll return an error code so
+		// we at least have some idea where to start looking if a merchant calls this in
 		if (isset($response->error) || !$response->body)
 			$this->render('583', 500);
 
@@ -201,12 +201,6 @@ class LoyaltyLion extends Module
 
 		if (!$currency_id)
 			$currency_id = Currency::getDefaultCurrency()->id_currency;
-
-		if (!$currency_id)
-		{
-			$c = Currency::getDefaultCurrency();
-			$currency_id = $c['currency_id'];
-		}
 
 		$problem_codes = array();
 
@@ -244,7 +238,7 @@ class LoyaltyLion extends Module
 	 * 
 	 * @return [type] [description]
 	 */
-	public function displayCreateVouchersAsync()
+	private function displayCreateVouchersAsync()
 	{
 		$reward_data = Tools::getValue('ll_create_reward');
 
@@ -279,7 +273,7 @@ class LoyaltyLion extends Module
 	 * Display (and handle updates of) the settings form, where users can update their token/secret
 	 * and batch import voucher codes
 	 */
-	public function displaySettingsForm()
+	private function displaySettingsForm()
 	{
 		$token = $this->getToken();
 		$secret = $this->getSecret();
@@ -297,52 +291,6 @@ class LoyaltyLion extends Module
 				Configuration::updateValue('LOYALTYLION_SECRET', $secret);
 
 				$this->output .= $this->displayConfirmation($this->l('Token and secret updated'));
-			}
-		}
-
-		if (Tools::isSubmit('submitVoucherCodes'))
-		{
-			// we probs need to create some vouchers now...
-
-			$this->form_values['discount_amount'] = Tools::getValue('discount_amount');
-			$this->form_values['discount_amount_currency'] = Tools::getValue('discount_amount_currency');
-			$this->form_values['codes'] = Tools::getValue('codes');
-
-			$discount_amount = (float)$this->form_values['discount_amount'];
-			$discount_amount_currency = (int)$this->form_values['discount_amount'];
-			$codes_str = $this->form_values['codes'];
-
-			$codes = array_filter(array_unique(preg_split("/\r\n|\n|\r/", $codes_str)), 'strlen');
-
-			if (!$discount_amount)
-				$this->output .= $this->displayError($this->l('Invalid discount amount'));
-			else if (empty($codes))
-				$this->output .= $this->displayError($this->l('At least one code is required'));
-			else
-			{
-				// reset form values
-				$this->form_values['discount_amount'] = '';
-				$this->form_values['discount_amount_currency'] = '';
-				$this->form_values['codes'] = '';
-
-				$problem_codes = array();
-
-				foreach ($codes as $code)
-				{
-					$result = $this->createRule($code, $discount_amount, $discount_amount_currency);
-
-					if (!$result)
-						$problem_codes[] = $code;
-				}
-
-				$created_codes = count($codes) - count($problem_codes);
-
-				if ($created_codes > 0)
-					$this->output .= $this->displayConfirmation("Created {$created_codes} new voucher codes");
-
-				if (!empty($problem_codes))
-					$this->output .= $this->displayError(count($problem_codes).' codes could not be created: '.implode(', ', $problem_codes));
-
 			}
 		}
 
@@ -365,7 +313,7 @@ class LoyaltyLion extends Module
 	 * can create an account (via loyaltylion.com). When a store first installs LoyaltyLion, this
 	 * is the page they'll see
 	 */
-	public function displaySignupForm()
+	private function displaySignupForm()
 	{
 		$shop_details = array(
 			'name' => Configuration::get('PS_SHOP_NAME'),
@@ -760,18 +708,23 @@ class LoyaltyLion extends Module
 				|| Tools::getValue('force_show_settings'))
 			$action = 'settings';
 
+		// force the display of the signup page
 		if (Tools::getValue('force_show_signup'))
 			$action = 'signup';
 
+		// automatically set a token and secret (given as url parameters)
 		if (Tools::getValue('ll_set_token_secret'))
 			$action = 'set_token_secret';
 
+		// display the create reward async page (which will trigger an ajax req)
 		if (Tools::getValue('ll_create_reward'))
 			$action = 'create_reward';
 
+		// create the reward (designed to be called via ajax for a nice UX)
 		if (Tools::getValue('ll_create_reward_async'))
 			$action = 'create_reward_async';
 
+		// reset all loyaltylion configuration values (e.g. token/secret)
 		if (Tools::getValue('ll_reset'))
 			$action = 'reset_configuration';
 
