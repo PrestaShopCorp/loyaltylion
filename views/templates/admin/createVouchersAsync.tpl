@@ -26,7 +26,7 @@
 *  @license    http://opensource.org/licenses/MIT  The MIT License
 *}
 <div id='loyaltylion-configuration'>
-  <div class='settings-box'>
+  <div class='settings-box fluid'>
     <!-- <div class='heading'></div> -->
     <div class='content'>
       <div class='create-vouchers-async'>

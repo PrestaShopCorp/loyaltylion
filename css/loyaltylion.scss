@@ -1,6 +1,10 @@
 $purple1: #6600c2;
 $orange1: darken(#ff960d, 5%);
 
+.nobootstrap {
+  min-width: 0 !important;
+}
+
 #loyaltylion-configuration {
 
   .header {
@@ -281,6 +285,10 @@ $orange1: darken(#ff960d, 5%);
     width: 650px;
     margin: 30px auto;
     border: 1px solid #ddd;
+
+    &.fluid {
+      width: auto;
+    }
 
     .no-account {
       text-align: center;

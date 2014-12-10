@@ -317,6 +317,7 @@ class LoyaltyLion extends Module
 		$shop_details = array(
 			'name' => Configuration::get('PS_SHOP_NAME'),
 			'url' => $this->context->shop->getBaseURL(),
+			'version' => _PS_VERSION_,
 			'currencies' => array(),
 			'languages' => array(),
 		);
