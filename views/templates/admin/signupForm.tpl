@@ -60,7 +60,7 @@
           <li>{l s='Refer a friend on Facebook, Twitter and via email' mod='loyaltylion'}</li>
           <li>{l s='Automatically generate bulk voucher codes' mod='loyaltylion'}</li>
           <li>{l s='Name and customise the program to match your store' mod='loyaltylion'}</li>
-          <li>{l s='No LoyaltyLion branding anywhere'}</li>
+          <li>{l s='No LoyaltyLion branding anywhere' mod='loyaltylion'}</li>
           <li>{l s='Gain customer insights: most engaged customers and top referrers' mod='loyaltylion'}</li>
           <li>{l s='Mobile friendly' mod='loyaltylion'}</li>
         </ul>

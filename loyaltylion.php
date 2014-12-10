@@ -173,7 +173,7 @@ class LoyaltyLion extends Module
 		$reward_data = Tools::getValue('ll_create_reward_async');
 
 		if (!empty($reward_data))
-			$reward_data = json_decode(base64_decode($reward_data));
+			$reward_data = Tools::jsonDecode(base64_decode($reward_data));
 
 		if (!$reward_data || $reward_data->type != 'discount' || !$reward_data->discount_amount || !$reward_data->codes_to_generate)
 			$this->render('582', 422);
@@ -188,7 +188,7 @@ class LoyaltyLion extends Module
 		if (isset($response->error) || !$response->body)
 			$this->render('583', 500);
 
-		$body = json_decode($response->body);
+		$body = Tools::jsonDecode($response->body);
 		$codes = $body->generated_codes;
 		$batch_id = $body->batch_id;
 
@@ -244,7 +244,7 @@ class LoyaltyLion extends Module
 		if (empty($reward_data))
 			return;
 
-		$reward_data_decoded = json_decode(base64_decode($reward_data));
+		$reward_data_decoded = Tools::jsonDecode(base64_decode($reward_data));
 
 		if (!$reward_data_decoded
 			|| $reward_data_decoded->type != 'discount'
@@ -331,7 +331,7 @@ class LoyaltyLion extends Module
 
 		// add currencies to shop details packet, so we can try to set the default currency during setup
 		foreach (Currency::getCurrencies() as $currency)
-			$shop_details['currencies'][] = strtolower($currency['iso_code']);
+			$shop_details['currencies'][] = Tools::strtolower($currency['iso_code']);
 
 		// same thing for languages (we'll send both iso code and language code, the latter we could use
 		// to automatically set the right locale settings)
@@ -344,7 +344,7 @@ class LoyaltyLion extends Module
 		$this->context->smarty->assign(array(
 			'base_uri' => $this->base_uri,
 			'loyaltylion_host' => $this->getLoyaltyLionHost(),
-			'shop_details' => base64_encode(json_encode($shop_details)),
+			'shop_details' => base64_encode(Tools::jsonEncode($shop_details)),
 		));
 
 		$this->output .= $this->display(__FILE__, 'views/templates/admin/signupForm.tpl');
@@ -921,7 +921,7 @@ class LoyaltyLion extends Module
 		$currencies = Currency::getCurrencies();
 
 		foreach ($currencies as $currency)
-			if (strtolower($currency['iso_code']) == strtolower($code))
+			if (Tools::strtolower($currency['iso_code']) == Tools::strtolower($code))
 				return $currency;
 	}
 
@@ -958,7 +958,7 @@ class LoyaltyLion extends Module
 		if (!empty($body) && is_array($body))
 		{
 			header('Content-Type: application/json');
-			$body = json_encode($body);
+			$body = Tools::jsonEncode($body);
 		}
 
 		die($body);
