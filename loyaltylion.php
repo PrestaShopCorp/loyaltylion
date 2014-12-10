@@ -342,10 +342,31 @@ class LoyaltyLion extends Module
 				'language_code' => $language['language_code'],
 			);
 
+		$default_currency = Currency::getDefaultCurrency();
+
+		switch ($default_currency->iso_code)
+		{
+			case 'GBP':
+				$pricing = array(99, 249, 499, 1499);
+				$pricing_sign = '£';
+				break;
+			case 'EUR':
+				$pricing = array(199, 299, 599, 1799);
+				$pricing_sign = '€';
+				break;
+			default:
+				$pricing = array(159, 399, 799, 2399);
+				$pricing_sign = '$';
+		}
+
 		$this->context->smarty->assign(array(
 			'base_uri' => $this->base_uri,
 			'loyaltylion_host' => $this->getLoyaltyLionHost(),
 			'shop_details' => base64_encode(Tools::jsonEncode($shop_details)),
+			'currency_code' => $default_currency->iso_code,
+			'currency_sign' => $default_currency->sign,
+			'pricing' => $pricing,
+			'pricing_sign' => $pricing_sign,
 		));
 
 		$this->output .= $this->display(__FILE__, 'views/templates/admin/signupForm.tpl');

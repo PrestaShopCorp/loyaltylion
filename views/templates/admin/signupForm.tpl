@@ -43,14 +43,14 @@
         <div class='sub-heading'>{l s='Create your own social loyalty program' mod='loyaltylion'}</div>
         <p>{l s='Show customers they’re valued and increase sales by rewarding referrals, purchases, signups, reviews and visits.' mod='loyaltylion'}</p>
 
-        <p>{l s='You decide what to reward and how to reward it; for example, 100 points for signups, 5 points per $1 spent and 1000 points per referral. Customers collect points and redeem them for vouchers to spend at your store.' mod='loyaltylion'}</p>
+        <p>{l s="You decide what to reward and how to reward it; for example, 100 points for signups, 5 points per {$currency_sign}1 spent and 1000 points per referral. Customers collect points and redeem them for vouchers to spend at your store." mod='loyaltylion'}</p>
 
         <div class='sub-heading'>{l s='Benefits' mod='loyaltylion'}</div>
         <ul>
           <li>{l s='Increase sales via repeat purchases' mod='loyaltylion'}</li>
           <li>{l s='Acquire new customers using our refer a friend feature. Reward referrals via Facebook, Twitter and email' mod='loyaltylion'}</li>
           <li>{l s='Differentiate your store from your competitors' mod='loyaltylion'}</li>
-          <li>{l s='Case Study: Beef&amp;Steak gains 2,114 new visitors worth $1,412 using LoyaltyLion.' mod='loyaltylion'} <a href='http://resources.loyaltylion.com/case-studies/2014-08-05/beefensteak-en.pdf' target='_blank'>{l s='Read more' mod='loyaltylion'}</a></li>
+          <li>{l s='Case Study: BeefenSteak gains 2,114 new visitors worth $1,412 using LoyaltyLion.' mod='loyaltylion'} <a href='http://resources.loyaltylion.com/case-studies/2014-08-05/beefensteak-en.pdf' target='_blank'>{l s='Read more' mod='loyaltylion'}</a></li>
         </ul>
 
         <div class='sub-heading'>{l s='Features' mod='loyaltylion'}</div>
@@ -76,7 +76,7 @@
               <div class='plan-box'>
                 <div class='price-box'>
                   <div class='price'>
-                    <div class='price'>£99<span>/mo</span></div>
+                    <div class='price'>{$pricing_sign}{$pricing[0]}<span>/mo</span></div>
                   </div>
                   <div class='limit'>{l s='up to' mod='loyaltylion'} 800 {l s='orders /mo' mod='loyaltylion'}</div>
                 </div>
@@ -87,7 +87,7 @@
               <div class='plan-box'>
                 <div class='price-box'>
                   <div class='price'>
-                    <div class='price'>£249<span>/mo</span></div>
+                    <div class='price'>{$pricing_sign}{$pricing[1]}<span>/mo</span></div>
                   </div>
                   <div class='limit'>{l s='up to' mod='loyaltylion'} 2000 {l s='orders /mo' mod='loyaltylion'}</div>
                 </div>
@@ -98,7 +98,7 @@
               <div class='plan-box'>
                 <div class='price-box'>
                   <div class='price'>
-                    <div class='price'>£499<span>/mo</span></div>
+                    <div class='price'>{$pricing_sign}{$pricing[2]}<span>/mo</span></div>
                   </div>
                   <div class='limit'>{l s='up to' mod='loyaltylion'} 4000 {l s='orders /mo' mod='loyaltylion'}</div>
                 </div>
