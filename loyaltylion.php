@@ -173,7 +173,7 @@ class LoyaltyLion extends Module
 		$reward_data = Tools::getValue('ll_create_reward_async');
 
 		if (!empty($reward_data))
-			$reward_data = Tools::jsonDecode(base64_decode($reward_data));
+			$reward_data = Tools::jsonDecode(urldecode($reward_data));
 
 		if (!$reward_data || $reward_data->type != 'discount' || !$reward_data->discount_amount || !$reward_data->codes_to_generate)
 			$this->render('582', 422);
@@ -244,7 +244,7 @@ class LoyaltyLion extends Module
 		if (empty($reward_data))
 			return;
 
-		$reward_data_decoded = Tools::jsonDecode(base64_decode($reward_data));
+		$reward_data_decoded = Tools::jsonDecode(urldecode($reward_data));
 
 		if (!$reward_data_decoded
 			|| $reward_data_decoded->type != 'discount'
@@ -330,19 +330,28 @@ class LoyaltyLion extends Module
 
 		$shop_details['module_base_url'] = $this->getBaseUri($module_url);
 
+		$default_currency = Currency::getDefaultCurrency();
+		$default_language = $this->context->language;
+
+		$shop_details['default_currency'] = $default_currency->iso_code;
+		$shop_details['default_language'] = array(
+			'iso_code' => $default_language->iso_code,
+			'language_code' => $default_language->language_code,
+		);
+
 		// add currencies to shop details packet, so we can try to set the default currency during setup
 		foreach (Currency::getCurrencies() as $currency)
-			$shop_details['currencies'][] = Tools::strtolower($currency['iso_code']);
+			if ($currency['iso_code'] != $shop_details['default_currency'])
+				$shop_details['currencies'][] = $currency['iso_code'];
 
 		// same thing for languages (we'll send both iso code and language code, the latter we could use
 		// to automatically set the right locale settings)
 		foreach (Language::getLanguages() as $language)
-			$shop_details['languages'][] = array(
-				'iso_code' => $language['iso_code'],
-				'language_code' => $language['language_code'],
-			);
-
-		$default_currency = Currency::getDefaultCurrency();
+			if ($language['iso_code'] != $shop_details['default_language']['iso_code'])
+				$shop_details['languages'][] = array(
+					'iso_code' => $language['iso_code'],
+					'language_code' => $language['language_code'],
+				);
 
 		switch ($default_currency->iso_code)
 		{
@@ -362,7 +371,7 @@ class LoyaltyLion extends Module
 		$this->context->smarty->assign(array(
 			'base_uri' => $this->base_uri,
 			'loyaltylion_host' => $this->getLoyaltyLionHost(),
-			'shop_details' => base64_encode(Tools::jsonEncode($shop_details)),
+			'shop_details' => urlencode(Tools::jsonEncode($shop_details)),
 			'currency_code' => $default_currency->iso_code,
 			'currency_sign' => $default_currency->sign,
 			'pricing' => $pricing,
