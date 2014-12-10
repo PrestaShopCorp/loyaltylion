@@ -875,7 +875,7 @@ class LoyaltyLion extends Module
 			// don't include conf parameter, because that is passed in when app is installed
 			// and isn't needed after that. we also don't want any of our own parameters because
 			// we'll use those to navigate between pages (e.g. to force view the settings page)
-			if (!in_array($k, array('conf', 'force_show_settings', 'force_show_signup')) && substr($k, 0, 3) != 'll_')
+			if (!in_array($k, array('conf', 'force_show_settings', 'force_show_signup')) && Tools::substr($k, 0, 3) != 'll_')
 				$base .= $k.'='.$value.'&';
 
 		return rtrim($base, '&');

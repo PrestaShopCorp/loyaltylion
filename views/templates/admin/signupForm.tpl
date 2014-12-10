@@ -76,7 +76,7 @@
               <div class='plan-box'>
                 <div class='price-box'>
                   <div class='price'>
-                    <div class='price'>{$pricing_sign}{$pricing[0]}<span>/mo</span></div>
+                    <div class='price'>{$pricing_sign|escape}{$pricing[0]|escape}<span>/mo</span></div>
                   </div>
                   <div class='limit'>{l s='up to' mod='loyaltylion'} 800 {l s='orders /mo' mod='loyaltylion'}</div>
                 </div>
@@ -87,7 +87,7 @@
               <div class='plan-box'>
                 <div class='price-box'>
                   <div class='price'>
-                    <div class='price'>{$pricing_sign}{$pricing[1]}<span>/mo</span></div>
+                    <div class='price'>{$pricing_sign|escape}{$pricing[1]|escape}<span>/mo</span></div>
                   </div>
                   <div class='limit'>{l s='up to' mod='loyaltylion'} 2000 {l s='orders /mo' mod='loyaltylion'}</div>
                 </div>
@@ -98,7 +98,7 @@
               <div class='plan-box'>
                 <div class='price-box'>
                   <div class='price'>
-                    <div class='price'>{$pricing_sign}{$pricing[2]}<span>/mo</span></div>
+                    <div class='price'>{$pricing_sign|escape}{$pricing[2]|escape}<span>/mo</span></div>
                   </div>
                   <div class='limit'>{l s='up to' mod='loyaltylion'} 4000 {l s='orders /mo' mod='loyaltylion'}</div>
                 </div>
