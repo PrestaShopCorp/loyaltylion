@@ -351,7 +351,7 @@ class LoyaltyLion extends Module
 				$pricing_sign = '£';
 				break;
 			case 'EUR':
-				$pricing = array(199, 299, 599, 1799);
+				$pricing = array(119, 299, 599, 1799);
 				$pricing_sign = '€';
 				break;
 			default:
