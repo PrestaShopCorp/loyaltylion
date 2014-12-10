@@ -58,8 +58,7 @@
       window.close();
     });
 
-    var reward_data = "{$reward_data}";
-    var url = "{$create_voucher_codes_url}";
+    var url = "{$create_voucher_codes_url|escape:'javascript'}";
 
     $.ajax({
       url: url,
