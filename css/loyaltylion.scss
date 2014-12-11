@@ -1,6 +1,10 @@
 $purple1: #6600c2;
 $orange1: darken(#ff960d, 5%);
 
+.nobootstrap {
+  min-width: 0 !important;
+}
+
 #loyaltylion-configuration {
 
   .header {
@@ -35,7 +39,7 @@ $orange1: darken(#ff960d, 5%);
   }
   .small-btn {
     font-size: 16px;
-    padding: 10px;
+    padding: 10px 14px;
   }
 
   .heading {
@@ -182,6 +186,8 @@ $orange1: darken(#ff960d, 5%);
 
     .pricing {
 
+      padding-top: 20px;
+
       .boxes {
         // padding-top: 5px;
       }
@@ -193,34 +199,41 @@ $orange1: darken(#ff960d, 5%);
 
         .plan-name {
           font-size: 20px;
-          margin-bottom: 10px;
+          margin-bottom: 15px;
+          color: #333;
         }
 
         .plan-box {
-          padding: 0 10px;
+          // padding: 0 10px;
         }
 
         .price-box {
           // background-color: #484B5E;
-          background-color: #777;
-          color: #fff;
-          padding: 15px 0;
+          // background-color: #777;
+          background-color: #fbfbfb;
+          color: #F38900;
+          padding: 20px 0;
           // border-radius: 6px 6px 0 0;
-          border-radius: 6px;
+          // border-radius: 6px;
+          border: 1px solid #E5E5E5;
+          border-left-width: 0;
+          border-top: 1px solid #f1f1f1;
+          border-bottom-width: 2px;
 
           .price {
-            font-size: 26px;
+            font-size: 38px;
             font-weight: 500;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
 
             span {
-              font-size: 16px;
+              font-size: 20px;
               font-weight: 400;
+              margin-left: 3px;
             }
           }
 
           .limit {
-            color: #efefef;
+            color: #555;
             font-size: 14px;
 
             a {
@@ -232,6 +245,12 @@ $orange1: darken(#ff960d, 5%);
                 text-decoration: none;
               }
             }
+          }
+        }
+
+        &:first-child {
+          .price-box {
+            border-left-width: 1px;
           }
         }
       }
@@ -266,6 +285,22 @@ $orange1: darken(#ff960d, 5%);
     width: 650px;
     margin: 30px auto;
     border: 1px solid #ddd;
+
+    &.fluid {
+      width: auto;
+    }
+
+    .no-account {
+      text-align: center;
+      font-size: 14px;
+      border-bottom: 1px solid #f2f2f2;
+      background-color: #fafafa;
+      padding: 15px 0;
+
+      a {
+        text-decoration: underline;
+      }
+    }
 
     .token-secret {
 
@@ -352,5 +387,98 @@ $orange1: darken(#ff960d, 5%);
         text-align: right;
       }
     }
+  }
+
+  .create-vouchers-async, .set-token-secret-success {
+    width: 80%;
+    margin: 50px auto;
+    text-align: center;
+    font-size: 16px;
+
+    p {
+      line-height: 30px;
+    }
+
+    .spinner {
+      margin-top: 3px;
+      width: 60px;
+      height: 60px;
+      display: inline-block;
+      background: url('../img/spinner_60x60.gif') no-repeat 0 0;
+    }
+
+    .loading, .complete, .error-happened {
+      padding: 20px;
+    }
+
+    .complete {
+      // border: 3px solid #468847;
+      // border-radius: 5px;
+    }
+    .error-happened {
+      border: 3px solid red;
+      border-radius: 5px;
+    }
+  }
+}
+
+#loyaltylion-lightbox-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+
+  background: #000;
+  background: rgba(0, 0, 0, 0.8);
+
+  opacity: 0;
+  transition: opacity 0.25s;
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+#loyaltylion-lightbox {
+
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  // visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.25s; 
+  z-index: 10001;
+
+  &.visible {
+    opacity: 1;
+  }
+
+  .loyaltylion-lightbox-close-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #333;
+    background-color: rgba(30, 30, 30, 0.7);
+    height: 40px;
+    width: 40px;
+    line-height: 40px;
+    color: #fff;
+    text-align: center;
+    font-size: 30px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #000;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+  }
+
+  img {
+    display: block;
+    cursor: pointer;
   }
 }

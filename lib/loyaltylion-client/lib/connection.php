@@ -29,7 +29,6 @@
 
 class LoyaltyLion_Connection
 {
-
 	private $token;
 	private $secret;
 	private $auth;
@@ -53,9 +52,13 @@ class LoyaltyLion_Connection
 		return $this->request('PUT', $path, $data);
 	}
 
+	public function get($path, $data = array())
+	{
+		return $this->request('GET', $path, $data);
+	}
+
 	private function request($method, $path, $data)
 	{
-
 		$options = array(
 			CURLOPT_URL => $this->base_uri.$path,
 			CURLOPT_USERAGENT => 'loyaltylion-php-client-v2.0.0',
@@ -78,10 +81,9 @@ class LoyaltyLion_Connection
 				);
 		}
 
-		if (!empty($data))
+		if ($method == 'POST' || $method == 'PUT')
 		{
 			$body = json_encode($data);
-
 			$options += array(
 				CURLOPT_POSTFIELDS => $body,
 				CURLOPT_HTTPHEADER => array(
@@ -106,7 +108,8 @@ class LoyaltyLion_Connection
 				'status' => $headers['http_code'],
 				'error' => $error_msg,
 			);
-		} else
+		}
+		else
 		{
 			$response = array(
 				'status' => $headers['http_code'],

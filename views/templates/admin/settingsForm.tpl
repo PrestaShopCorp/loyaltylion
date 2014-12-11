@@ -29,6 +29,11 @@
 	<div class='settings-box'>
 		<div class='heading'></div>
 		<div class='content'>
+			{if !$token || !$secret}
+				<div class='no-account'>
+					Don't have a LoyaltyLion account yet? <a href='{$base_uri|escape}&amp;force_show_signup=1'>Click here to get started</a></div>
+				</div>
+			{/if}
 			<div class='token-secret'>
 				<form action='{$action|escape}' method='post'>
 					<div class='group token'>
@@ -41,12 +46,12 @@
 					</div>
 					<div class='submit'>
 						<div class='get-token-secret'><a href='http://{$loyaltylion_host|escape}/prestashop/token-secret' id='get-token-secret-link' target='_blank'>{l s='Click here to get your LoyaltyLion token and secret' mod='loyaltylion'}</a></div>
-						<input type='submit' class='orange-btn small-btn' value='{l s='Save token &amp; secret' mod='loyaltylion'}' name='submitConfiguration'>
+						<input type='submit' class='orange-btn small-btn' value='{l s='Update token & secret' mod='loyaltylion'}' name='submitConfiguration'>
 					</div>
 				</form>
 				<!-- <br style='clear: left'> -->
 			</div>
-			<div class='import-vouchers'>
+			<div class='import-vouchers' style='display: none'>
 				<div class='import-vouchers-heading'>{l s='Import voucher codes' mod='loyaltylion'}</div>
 				<form action='{$action|escape}' method='post'>
 					<div class='group'>
