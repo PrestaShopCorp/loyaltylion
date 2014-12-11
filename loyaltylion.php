@@ -941,7 +941,10 @@ class LoyaltyLion extends Module
 
 	/**
 	 * Get a PrestaShop currency by looking it up with an `iso_code`
-	 * 
+	 *
+	 * If a currency with this code exists, it will be returned (as an associative array, not
+	 * an Object). If no such currency exists null will be returned
+	 *
 	 * @param  [type] $code [description]
 	 * @return [type]       [description]
 	 */
@@ -952,6 +955,8 @@ class LoyaltyLion extends Module
 		foreach ($currencies as $currency)
 			if (Tools::strtolower($currency['iso_code']) == Tools::strtolower($code))
 				return $currency;
+
+		return null;
 	}
 
 	/**
