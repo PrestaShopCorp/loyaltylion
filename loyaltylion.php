@@ -29,8 +29,6 @@
 
 if (!defined('_PS_VERSION_')) exit;
 
-require(dirname(__FILE__).'/lib/loyaltylion-client/lib/connection.php');
-
 class LoyaltyLion extends Module
 {
 
