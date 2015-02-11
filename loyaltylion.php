@@ -1024,7 +1024,7 @@ class LoyaltyLion extends Module
 	private function isLoyaltyLionConfigured()
 	{
 		$token = $this->getToken();
-		$secret = $this->getToken();
+		$secret = $this->getSecret();
 		return !empty($token) && !empty($secret);
 	}
 }
