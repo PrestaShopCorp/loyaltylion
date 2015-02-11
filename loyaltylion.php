@@ -390,6 +390,8 @@ class LoyaltyLion extends Module
 	 */
 	public function hookDisplayHeader()
 	{
+		if (!$this->isLoyaltyLionConfigured()) return;
+
 		// prestashop appears to run this hook prior to starting output, so it should be safe to
 		// set the referral cookie here if we have one !
 		$referral_id = Tools::getValue('ll_ref_id');
@@ -432,6 +434,8 @@ class LoyaltyLion extends Module
 	 */
 	public function hookActionCustomerAccountAdd($params)
 	{
+		if (!$this->isLoyaltyLionConfigured()) return;
+
 		$customer = $params['newCustomer'];
 		$data = array(
 			'customer_id' => $customer->id,
@@ -462,6 +466,8 @@ class LoyaltyLion extends Module
 	 */
 	public function hookActionObjectProductCommentAddAfter($params)
 	{
+		if (!$this->isLoyaltyLionConfigured()) return;
+
 		$comment = $params['object'];
 		$customer = new Customer($comment->id_customer);
 
@@ -507,6 +513,8 @@ class LoyaltyLion extends Module
 	 */
 	public function hookActionObjectProductCommentDeleteAfter($params)
 	{
+		if (!$this->isLoyaltyLionConfigured()) return;
+
 		$object = $params['object'];
 
 		if (!$object) return;
@@ -531,6 +539,8 @@ class LoyaltyLion extends Module
 	 */
 	public function hookActionObjectProductCommentValidateAfter($params)
 	{
+		if (!$this->isLoyaltyLionConfigured()) return;
+
 		$object = $params['object'];
 
 		if (!$object) return;
@@ -552,6 +562,8 @@ class LoyaltyLion extends Module
 	 */
 	public function hookActionValidateOrder($params)
 	{
+		if (!$this->isLoyaltyLionConfigured()) return;
+
 		$order = $params['order'];
 		$customer = new Customer((int)$order->id_customer);
 
@@ -596,6 +608,8 @@ class LoyaltyLion extends Module
 	 */
 	public function hookActionOrderStatusPostUpdate($params)
 	{
+		if (!$this->isLoyaltyLionConfigured()) return;
+
 		$order = new Order((int)$params['id_order']);
 		$this->sendOrderUpdate($order);
 	}
@@ -607,6 +621,8 @@ class LoyaltyLion extends Module
 	 */
 	public function hookActionProductCancel($params)
 	{
+		if (!$this->isLoyaltyLionConfigured()) return;
+
 		$this->sendOrderUpdate($params['order']);
 	}
 
@@ -620,6 +636,8 @@ class LoyaltyLion extends Module
 	 */
 	public function hookActionObjectOrderSlipAddAfter($params)
 	{
+		if (!$this->isLoyaltyLionConfigured()) return;
+
 		$order = new Order((int)$params['object']->id_order);
 		$this->sendOrderUpdate($order);
 	}
@@ -997,4 +1015,17 @@ class LoyaltyLion extends Module
 
 		die($body);
 	}
+
+	/**
+	 * Checks if token and secret are set in configuration
+	 * 
+	 * @return boolean [description]
+	 */
+	private function isLoyaltyLionConfigured()
+  {
+  	$token = $this->getToken();
+  	$secret = $this->getToken();
+
+  	return !empty($token) && !empty($secret);
+  }
 }
