@@ -762,7 +762,7 @@ class LoyaltyLion extends Module
 		if ($rate == 1 || $rate == 0)
 			return number_format($price, 2);
 
-		return number_format($price * $rate, 2);
+		return number_format($price / $rate, 2);
 	}
 
 	/**
