@@ -44,7 +44,7 @@ class LoyaltyLion extends Module
 	{
 		$this->name = 'loyaltylion';
 		$this->tab = 'advertising_marketing';
-		$this->version = '1.2.1';
+		$this->version = '1.2.2';
 		$this->author = 'LoyaltyLion';
 		$this->need_instance = 0;
 
@@ -571,8 +571,8 @@ class LoyaltyLion extends Module
 			// an order "reference" is not unique normally, but this method will make sure it is (it adds a #2 etc)
 			// to the reference if there are multiple orders with the same one
 			'number' => (string)$order->getUniqReference(),
-			'total' => (string)$order->total_paid,
-			'total_shipping' => (string)$order->total_shipping,
+			'total' => $this->convertPrice($order->total_paid, $order->conversion_rate),
+			'total_shipping' => $this->convertPrice($order->total_shipping, $order->conversion_rate),
 			'customer_id' => $customer->id,
 			'customer_email' => $customer->email,
 			'merchant_id' => $order->id,
@@ -585,7 +585,7 @@ class LoyaltyLion extends Module
 		else
 		{
 			$data['payment_status'] = 'partially_paid';
-			$data['total_paid'] = (string)$order->total_paid_real;
+			$data['total_paid'] = $this->convertPrice($order->total_paid_real, $order->conversion_rate);
 		}
 
 		if ($this->context->cookie->loyaltylion_referral_id)
@@ -616,7 +616,7 @@ class LoyaltyLion extends Module
 
 	/**
 	 * Fired when a product is removed from an order
-	 * 
+	 *
 	 * @param  [type] $params [description]
 	 */
 	public function hookActionProductCancel($params)
@@ -647,7 +647,7 @@ class LoyaltyLion extends Module
 	 *
 	 * This is an idempotent operation in that it sends a full copy of the order to the LoyaltyLion
 	 * order update endpoint, so it's safe to call this whenever there is any change to a Prestashop order
-	 * 
+	 *
 	 * @param  [type] $order [description]
 	 */
 	private function sendOrderUpdate($order)
@@ -671,12 +671,12 @@ class LoyaltyLion extends Module
 		else if ((float)$order->total_paid_real == (float)$order->total_paid)
 		{
 			$data['payment_status'] = 'paid';
-			$data['total_paid'] = (string)$order->total_paid;
+			$data['total_paid'] = $this->convertPrice($order->total_paid, $order->conversion_rate);
 		}
 		else
 		{
 			$data['payment_status'] = 'partially_paid';
-			$data['total_paid'] = (string)$order->total_paid_real;
+			$data['total_paid'] = $this->convertPrice($order->total_paid_real, $order->conversion_rate);
 		}
 
 		// cancelled?
@@ -722,6 +722,15 @@ class LoyaltyLion extends Module
 			}
 		}
 
+		// order slips have their own exchange rate, but because LL is treating this order in the
+		// default currency, we're going to use the order's original rate, not the order slips. this
+		// might lead to some minor inaccuracies if there is a long period between the order & refunds,
+		// based on exchange rate fluctuations, but this seems the most reasonable and robust way to
+		// deal with them for now
+
+		if ($data['total_refunded'])
+			$data['total_refunded'] = $this->convertPrice($data['total_refunded'], $order->conversion_rate);
+
 		// refund state: PS_OS_REFUND
 
 		$this->loadLoyaltyLionClient();
@@ -732,6 +741,28 @@ class LoyaltyLion extends Module
 			Logger::addLog('[LoyaltyLion] Failed to update order ('.$order->id.'). API status: '
 				.$response->status.', error: '.$response->error, 3);
 		}
+	}
+
+	/**
+	 * Convert a price using the given exchange rate
+	 *
+	 * PrestaShop orders can be placed in any currency. If they are placed in a currency that is not
+	 * the default, their `conversion_rate` field will be set. I believe this rate is based on the
+	 * conversion rate between the currency and the default at the time of the order.
+	 *
+	 * @param  [type] $amount
+	 * @param  [type] $rate
+	 * @return String The converted (if applicable) amount, as a string, e.g. '12.97'
+	 */
+	private function convertPrice($price, $rate)
+	{
+		$rate = (float)$rate;
+		$price = (float)$price;
+
+		if ($rate == 1 || $rate == 0)
+			return number_format($price, 2);
+
+		return number_format($price / $rate, 2);
 	}
 
 	/**
