@@ -612,6 +612,22 @@ class LoyaltyLion extends Module
 		if ($tracking_id)
 			$data['tracking_id'] = $tracking_id;
 
+		$cart_rules = $order->getCartRules();
+
+		if (!empty($cart_rules)) {
+			$data['discount_codes'] = array();
+
+			foreach ($cart_rules as $cart_rule) {
+				if (!$cart_rule['name'] || !$cart_rule['value'])
+					continue;
+
+				$data['discount_codes'][] = array(
+					'code' => $cart_rule['name'],
+					'amount' => $cart_rule['value'],
+				);
+			}
+		}
+
 		$this->loadLoyaltyLionClient();
 		$response = $this->client->orders->create($data);
 
