@@ -67,46 +67,43 @@
 
         <div class='sub-heading'>{l s='Pricing' mod='loyaltylion'}</div>
 
-        <p>{l s="We'll let you know which plan you'll be on before your free trial ends. You can change plans whenever you like, and cancel any time." mod='loyaltylion'}</p>
+        <p>{l s="Pricing is based on the number of orders per month. We'll let you know which plan you'll be on before your free trial ends." mod='loyaltylion'}</p>
 
         <div class='pricing'>
           <div class='boxes'>
             <div class='pricing-box'>
-              <div class='plan-name'>{l s='Starter' mod='loyaltylion'}</div>
               <div class='plan-box'>
                 <div class='price-box'>
                   <div class='price'>
                     <div class='price'>{$pricing_sign|escape}{$pricing[0]|escape}<span>/mo</span></div>
                   </div>
-                  <div class='limit'>{l s='up to' mod='loyaltylion'} 800 {l s='orders /mo' mod='loyaltylion'}</div>
+                  <div class='limit'>0-200 {l s='orders /month' mod='loyaltylion'}</div>
                 </div>
               </div>
             </div>
             <div class='pricing-box'>
-              <div class='plan-name'>{l s='Small' mod='loyaltylion'}</div>
               <div class='plan-box'>
                 <div class='price-box'>
                   <div class='price'>
                     <div class='price'>{$pricing_sign|escape}{$pricing[1]|escape}<span>/mo</span></div>
                   </div>
-                  <div class='limit'>{l s='up to' mod='loyaltylion'} 2000 {l s='orders /mo' mod='loyaltylion'}</div>
+                  <div class='limit'>201-400 {l s='orders /month' mod='loyaltylion'}</div>
                 </div>
               </div>
             </div>
             <div class='pricing-box'>
-              <div class='plan-name'>{l s='Medium' mod='loyaltylion'}</div>
               <div class='plan-box'>
                 <div class='price-box'>
                   <div class='price'>
                     <div class='price'>{$pricing_sign|escape}{$pricing[2]|escape}<span>/mo</span></div>
                   </div>
-                  <div class='limit'>{l s='up to' mod='loyaltylion'} 4000 {l s='orders /mo' mod='loyaltylion'}</div>
+                  <div class='limit'>401-800 {l s='orders /month' mod='loyaltylion'}</div>
                 </div>
               </div>
             </div>
           </div>
 
-          <p class='enterprise'>{l s='More than 4000 orders a month?' mod='loyaltylion'} <a href='mailto:hello@loyaltylion.com'>{l s='Contact us' mod='loyaltylion'}</a></p>
+          <p class='enterprise'>{l s='More than 800 orders a month?' mod='loyaltylion'} <a href='mailto:hello@loyaltylion.com'>{l s='Contact us' mod='loyaltylion'}</a></p>
         </div>
 
         <div class='signup-btn'>

@@ -44,7 +44,7 @@ class LoyaltyLion extends Module
 	{
 		$this->name = 'loyaltylion';
 		$this->tab = 'advertising_marketing';
-		$this->version = '1.2.2';
+		$this->version = '1.2.4';
 		$this->author = 'LoyaltyLion';
 		$this->need_instance = 0;
 
@@ -354,15 +354,15 @@ class LoyaltyLion extends Module
 		switch ($default_currency->iso_code)
 		{
 			case 'GBP':
-				$pricing = array(99, 249, 499, 1499);
+				$pricing = array(25, 49, 99, 249);
 				$pricing_sign = '£';
 				break;
 			case 'EUR':
-				$pricing = array(119, 299, 599, 1799);
+				$pricing = array(29, 59, 119, 299);
 				$pricing_sign = '€';
 				break;
 			default:
-				$pricing = array(159, 399, 799, 2399);
+				$pricing = array(39, 79, 159, 399);
 				$pricing_sign = '$';
 		}
 
@@ -399,6 +399,17 @@ class LoyaltyLion extends Module
 		// if we have an id and we haven't already set a cookie for it (don't override existing ref cookie)
 		if ($referral_id && !$this->context->cookie->loyaltylion_referral_id)
 			$this->context->cookie->__set('loyaltylion_referral_id', $referral_id);
+
+		$tracking_id = Tools::getValue('ll_eid');
+
+		if ($tracking_id) {
+			// I don't trust using $_SESSION as it's never used anywhere else in PrestaShop, so I'm
+			// concerned it might randomly break other installs. So instead we'll use the standard cookie
+			// store, but just in case it ends up being persisted forever, we'll prefix the tracking id
+			// with a timestamp so we can only send it when tracking if it's less than 24 hrs old
+			$value = time().':::'.$tracking_id;
+			$this->context->cookie->__set('loyaltylion_tracking_id', $value);
+		}
 
 		$customer = $this->context->customer;
 
@@ -445,6 +456,11 @@ class LoyaltyLion extends Module
 
 		if ($this->context->cookie->loyaltylion_referral_id)
 			$data['referral_id'] = $this->context->cookie->loyaltylion_referral_id;
+
+		$tracking_id = $this->getTrackingIdFromCookie();
+
+		if ($tracking_id)
+			$data['tracking_id'] = $tracking_id;
 
 		$this->loadLoyaltyLionClient();
 
@@ -507,7 +523,7 @@ class LoyaltyLion extends Module
 	 * Hook into `ProductComment` deletes, which lets us track when a product comment has been
 	 * deleted and tell the LoyaltyLion API so any points for that review can be removed. This
 	 * only supports the official Prestashop product comments module
-	 * 
+	 *
 	 * @param  [type] $params [description]
 	 * @return [type]         [description]
 	 */
@@ -533,7 +549,7 @@ class LoyaltyLion extends Module
 	 * Hook into `ProductComment` validations, which lets us track when a product comment has been
 	 * moderated and tell the LoyaltyLion API so any points for that review can be approved. This
 	 * only supports the official Prestashop product comments module
-	 * 
+	 *
 	 * @param  [type] $params [description]
 	 * @return [type]         [description]
 	 */
@@ -590,6 +606,27 @@ class LoyaltyLion extends Module
 
 		if ($this->context->cookie->loyaltylion_referral_id)
 			$data['referral_id'] = $this->context->cookie->loyaltylion_referral_id;
+
+		$tracking_id = $this->getTrackingIdFromCookie();
+
+		if ($tracking_id)
+			$data['tracking_id'] = $tracking_id;
+
+		$cart_rules = $order->getCartRules();
+
+		if (!empty($cart_rules)) {
+			$data['discount_codes'] = array();
+
+			foreach ($cart_rules as $cart_rule) {
+				if (!$cart_rule['name'] || !$cart_rule['value'])
+					continue;
+
+				$data['discount_codes'][] = array(
+					'code' => $cart_rule['name'],
+					'amount' => $cart_rule['value'],
+				);
+			}
+		}
 
 		$this->loadLoyaltyLionClient();
 		$response = $this->client->orders->create($data);
@@ -989,6 +1026,32 @@ class LoyaltyLion extends Module
 	}
 
 	/**
+	 * Check the current cookie for a LoyaltyLion `tracking_id`
+	 *
+	 * If this id exists, and has not expired, it will be returned
+	 *
+	 * @return [type] Tracking id or null if it doesn't exist or has expired
+	 */
+	private function getTrackingIdFromCookie() {
+		if (!$this->context->cookie->loyaltylion_tracking_id)
+			return null;
+
+		$values = explode(':::', $this->context->cookie->loyaltylion_tracking_id);
+
+		if (empty($values))
+			return null;
+
+		if (count($values) != 2)
+			return $values[0];
+
+		// for now, let's have a 24 hour expiration time on the timestamp
+		if (time() - (int)$values[0] > 86400)
+			return null;
+
+		return $values[1];
+	}
+
+	/**
 	 * Get a PrestaShop currency by looking it up with an `iso_code`
 	 *
 	 * If a currency with this code exists, it will be returned (as an associative array, not
@@ -1011,7 +1074,7 @@ class LoyaltyLion extends Module
 	/**
 	 * Iterates over all currencies, if iso code of currency
 	 * is same with currency code we look for, returs the id of it.
-	 * 
+	 *
 	 * @param  [type] $code [description]
 	 * @return [type]       [description]
 	 */
@@ -1029,7 +1092,7 @@ class LoyaltyLion extends Module
 	 * Render immediately (i.e. for ajax requests)
 	 *
 	 * If an array is provided as $body this will render a JSON response
-	 * 
+	 *
 	 * @param  [type]  $body        [description]
 	 * @param  integer $status_code [description]
 	 * @return [type]               [description]
