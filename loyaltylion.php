@@ -354,15 +354,15 @@ class LoyaltyLion extends Module
 		switch ($default_currency->iso_code)
 		{
 			case 'GBP':
-				$pricing = array(99, 249, 499, 1499);
+				$pricing = array(25, 49, 99, 249);
 				$pricing_sign = '£';
 				break;
 			case 'EUR':
-				$pricing = array(119, 299, 599, 1799);
+				$pricing = array(29, 59, 119, 299);
 				$pricing_sign = '€';
 				break;
 			default:
-				$pricing = array(159, 399, 799, 2399);
+				$pricing = array(39, 79, 159, 399);
 				$pricing_sign = '$';
 		}
 
