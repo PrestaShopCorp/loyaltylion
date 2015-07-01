@@ -428,6 +428,7 @@ class LoyaltyLion extends Module
 				'customer_id' => $customer->id,
 				'customer_email' => $customer->email,
 				'customer_name' => '',
+				'is_guest_customer' => $customer->is_guest,
 				'date' => $date,
 				'auth_token' => $auth_token,
 			));
@@ -452,6 +453,7 @@ class LoyaltyLion extends Module
 			'customer_id' => $customer->id,
 			'customer_email' => $customer->email,
 			'date' => date('c'),
+			'guest' => $customer->is_guest,
 		);
 
 		if ($this->context->cookie->loyaltylion_referral_id)
