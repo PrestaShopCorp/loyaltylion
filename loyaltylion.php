@@ -593,7 +593,7 @@ class LoyaltyLion extends Module
 			'total_shipping' => $this->convertPrice($order->total_shipping, $order->conversion_rate),
 			'customer_id' => $customer->id,
 			'customer_email' => $customer->email,
-			'guest' => $customer->is_guest,
+			'guest' => $customer->is_guest == '1',
 			'merchant_id' => $order->id,
 		);
 
