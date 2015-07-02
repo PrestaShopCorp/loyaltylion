@@ -44,7 +44,7 @@ class LoyaltyLion extends Module
 	{
 		$this->name = 'loyaltylion';
 		$this->tab = 'advertising_marketing';
-		$this->version = '1.2.3';
+		$this->version = '1.2.4';
 		$this->author = 'LoyaltyLion';
 		$this->need_instance = 0;
 
@@ -593,6 +593,7 @@ class LoyaltyLion extends Module
 			'total_shipping' => $this->convertPrice($order->total_shipping, $order->conversion_rate),
 			'customer_id' => $customer->id,
 			'customer_email' => $customer->email,
+			'guest' => $customer->is_guest,
 			'merchant_id' => $order->id,
 		);
 
