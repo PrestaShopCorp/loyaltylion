@@ -34,7 +34,7 @@
 
 lion.init("{$ll_token|escape}");
 lion.configure({ platform:'prestashop' });
-{if isset($customer_id)}
+{if isset($customer_id) && !$is_guest_customer}
 lion.identify_customer({ id:"{$customer_id|escape}", email:"{$customer_email|escape}", name:"{$customer_name|escape}" });
 lion.auth_customer({ date:"{$date|escape}", auth_token:"{$auth_token|escape}" });
 {/if}
