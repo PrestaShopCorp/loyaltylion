@@ -44,7 +44,7 @@ class LoyaltyLion extends Module
 	{
 		$this->name = 'loyaltylion';
 		$this->tab = 'advertising_marketing';
-		$this->version = '1.2.3';
+		$this->version = '1.2.4';
 		$this->author = 'LoyaltyLion';
 		$this->need_instance = 0;
 
@@ -428,6 +428,7 @@ class LoyaltyLion extends Module
 				'customer_id' => $customer->id,
 				'customer_email' => $customer->email,
 				'customer_name' => '',
+				'is_guest_customer' => $customer->is_guest,
 				'date' => $date,
 				'auth_token' => $auth_token,
 			));
@@ -452,6 +453,9 @@ class LoyaltyLion extends Module
 			'customer_id' => $customer->id,
 			'customer_email' => $customer->email,
 			'date' => date('c'),
+			'guest' => $customer->is_guest,
+			'ip_address' => Tools::getRemoteAddr(),
+			'user_agent' => $_SERVER['HTTP_USER_AGENT']
 		);
 
 		if ($this->context->cookie->loyaltylion_referral_id)
@@ -591,7 +595,10 @@ class LoyaltyLion extends Module
 			'total_shipping' => $this->convertPrice($order->total_shipping, $order->conversion_rate),
 			'customer_id' => $customer->id,
 			'customer_email' => $customer->email,
+			'guest' => $customer->is_guest == '1',
 			'merchant_id' => $order->id,
+			'ip_address' => Tools::getRemoteAddr(),
+			'user_agent' => $_SERVER['HTTP_USER_AGENT']
 		);
 
 		if ((float)$order->total_paid_real == 0)
@@ -698,6 +705,8 @@ class LoyaltyLion extends Module
 			'refund_status' => 'not_refunded',
 			'cancellation_status' => 'not_cancelled',
 			'total_refunded' => 0,
+			'ip_address' => Tools::getRemoteAddr(),
+			'user_agent' => $_SERVER['HTTP_USER_AGENT']
 		);
 
 		if ((float)$order->total_paid_real == 0)
