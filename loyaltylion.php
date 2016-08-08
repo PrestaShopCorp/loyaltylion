@@ -44,7 +44,7 @@ class LoyaltyLion extends Module
 	{
 		$this->name = 'loyaltylion';
 		$this->tab = 'advertising_marketing';
-		$this->version = '1.2.4';
+		$this->version = '1.2.5';
 		$this->author = 'LoyaltyLion';
 		$this->need_instance = 0;
 
@@ -468,7 +468,7 @@ class LoyaltyLion extends Module
 
 		$this->loadLoyaltyLionClient();
 
-		$response = $this->client->activities->track('signup', $data);
+		$response = $this->client->activities->track('$signup', $data);
 
 		if (!$response->success)
 		{
@@ -500,7 +500,7 @@ class LoyaltyLion extends Module
 
 		$this->loadLoyaltyLionClient();
 
-		$response = $this->client->activities->track('review', $data);
+		$response = $this->client->activities->track('$review', $data);
 
 		if (!$response->success)
 		{
@@ -513,7 +513,7 @@ class LoyaltyLion extends Module
 			// reviews do not require moderation, which means this one will be shown immediately and we should
 			// send an update now to approve it right now
 
-			$response = $this->client->activities->update('review', $comment->id, array('state' => 'approved'));
+			$response = $this->client->activities->update('$review', $comment->id, array('state' => 'approved'));
 
 			if (!$response->success)
 			{
@@ -540,7 +540,7 @@ class LoyaltyLion extends Module
 		if (!$object) return;
 
 		$this->loadLoyaltyLionClient();
-		$response = $this->client->activities->update('review', $object->id, array('state' => 'declined'));
+		$response = $this->client->activities->update('$review', $object->id, array('state' => 'declined'));
 
 		if (!$response->success)
 		{
@@ -566,7 +566,7 @@ class LoyaltyLion extends Module
 		if (!$object) return;
 
 		$this->loadLoyaltyLionClient();
-		$response = $this->client->activities->update('review', $object->id, array('state' => 'approved'));
+		$response = $this->client->activities->update('$review', $object->id, array('state' => 'approved'));
 
 		if (!$response->success)
 		{
