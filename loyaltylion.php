@@ -44,7 +44,7 @@ class LoyaltyLion extends Module
 	{
 		$this->name = 'loyaltylion';
 		$this->tab = 'advertising_marketing';
-		$this->version = '1.2.4';
+		$this->version = '1.2.5';
 		$this->author = 'LoyaltyLion';
 		$this->need_instance = 0;
 
